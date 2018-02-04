@@ -17,8 +17,8 @@ handler500 = 'mainapp.views.server_error'
 
 urlpatterns = [
 
-    # url(r'^$', views.home, name='home'),
-    url(r'^',  include('mainapp.urls',namespace='mainapp')),
+    url(r'^$', views.home, name='home'),
+    # url(r'^',  include('mainapp.urls')),
     url(r'^login/$', auth_views.login, {'template_name': 'registration/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,{'next_page': 'home'}, name='logout'),
     url(r'^oauth/', include('social_django.urls', namespace='social')),  # <--

@@ -11,13 +11,22 @@ urlpatterns = [
 
     url(r'^$', views.home, name='home'),
     url(r'^report/?$',views.report, name='report'),
-    url(r'^questionnaire/?$',views.questionnaire, name='questionnaire'),
     # url(r'^profile/?$',views.profile, name='profile'),
     url(r'^delivery/?$',views.delivery, name='delivery'),
+    url(r'^ud-delivery/?$',views.ud_delivery, name='ud_delivery'),
+    
     url(r'^success/(?P<order_id>\d+)/?$',views.success, name='success'),
     url(r'^addStore/?$', views.addStore, name='add_store'),
     url(r'^(?P<pk>\d+)/addMenu/?$', views.addMenu, name='add_menu'),
-    url(r'^store/(?P<pk>\d+)/?$', views.shop, name='shop'),
+    url(r'^store/(?P<store_name>.*)/(?P<store_id>\d+)$', views.shop, name='shop'),
+    url(r'^store/โรงอาหารโต้รุ่ง/(?P<store_name>.*)?$', views.until_dawn_canteen, name='until_dawn_canteen'),
+
+    # url(r'^add_to_cart/(?P<menu_iud>\d+)/(?P<quantity>\d+)$', views.add_to_cart, name='add_to_cart'),
+    url(r'^add_to_cart/$', views.add_to_cart, name='add_to_cart'),
+    url(r'^remove_from_cart/$', views.remove_from_cart, name='remove_from_cart'),
+    url(r'^check-out/$', views.ud_checkout, name='ud_checkout'),
+    
+    # url(r'^store/(?P<store_name>.*)/(?P<store_id>\d+)/delivery$',views.night_canteen, name="night_canteen"),
     url(r'^search/(?P<cate>.*)?$',views.searchBycate, name='search_cate'),
     url(r'^usecoupon/(?P<coupon>\d+)?$',views.use_coupon, name='use_coupon'),
     url(r'^search/?$',views.searchAll, name='search_input'),
@@ -28,6 +37,9 @@ urlpatterns = [
     url(r'^checkIsSell/$', views.checkIsSell, name='checkIsSell'),
     url(r'^changeDelivery/$', views.changeDelivery, name='changeDelivery'),
     url(r'^select-payment/(?P<pk>\d+)/$', views.payment, name='select_payment'),
+
+    url(r'^ud-select-payment/(?P<order_id>\d+)/$', views.ud_payment, name='ud-select-payment'),
+   
     url(r'^edit-store/$', views.outofstock, name='outofstock'),
     url(r'^edit-delivery/$', views.edit_delivery, name='edit_delivery'),
     url(r'^inf$', views.fill_in, name='inf'),

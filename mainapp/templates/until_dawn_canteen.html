@@ -1,0 +1,358 @@
+{% extends 'base.html' %} {% load static %}{% load widget_tweaks %} {% block content %}
+  
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style type="text/css">
+    
+    
+    
+    .spinButton :hover{
+    background-color:#FFBF00;
+    color: white;
+    border-color: #FFBF00;
+    }
+    .input-group .spinButton:hover{
+    background-color:#FFBF00;
+    color: white;
+    border-color: #FFBF00;
+    }
+    button{
+    background-color:#FFBF00;
+    color: white;
+    border-color: #FFBF00;
+    }
+    #custom-search-input {
+    margin-left: 25%;
+    /*padding: 3px;*/
+    border: solid 1px #E4E4E4;
+    border-radius: 6px;
+    background-color: #fff;
+    width: 50%;
+    }
+    #custom-search-input input {
+    border: 0;
+    box-shadow: none;
+    height: 40%
+    }
+    #custom-search-input button {
+    margin: 2px 0 0 0;
+    background: none;
+    box-shadow: none;
+    border: 0;
+    color: #666666;
+    padding: 0 8px 0 10px;
+    border-left: solid 1px #ccc;
+    }
+    #custom-search-input button:hover {
+    border: 0;
+    box-shadow: none;
+    border-left: solid 1px #ccc;
+    }
+    #custom-search-input .glyphicon-search {
+    font-size: 23px;
+    }
+    .circular-square {
+    border-radius: 50%;
+    width: 20%;
+    height: 20%;
+    /*background-image: url('http://strawberry-fest.org/wp-content/uploads/2012/01/Coca-Cola-logo.jpg');*/
+    background-size: cover;
+    display: block;
+    box-shadow: 0 0 0 5px #f66;
+    }
+    
+    .show {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    /*left: 50%;*/
+    /*top: 50%;*/
+    }
+    
+    .aboutStore{
+    color: #FFBF00;
+    }
+    .comment{
+    /*color: #47b2c2;*/
+    color: black;font-weight: bold;
+    }
+    .uk-card-media-top{
+    margin-bottom: -25px;
+    }
+    a{
+    color: black;
+    }
+    #stars {
+    font-size: 140px;
+    color: #FF0000;
+    }
+    #stars-existing {
+    color: #FFED85;
+    }
+    div.stars {
+    width: 270px;
+    display: inline-block;
+    }
+    input.star {
+    display: none;
+    }
+    label.star {
+    float: right;
+    padding: 5px;
+    font-size: 30px;
+    color: #444;
+    font-weight: normal;
+    transition: all .2s;
+    }
+    input.star:checked ~ label.star:before {
+    content: '\f005';
+    color: #FD4;
+    transition: all .25s;
+    }
+    input.star-5:checked ~ label.star:before {
+    color: #FE7;
+    text-shadow: 0 0 20px #952;
+    }
+    input.star-1:checked ~ label.star:before {
+    color: #F62;
+    }
+    label.star:hover {
+    transform: rotate(-15deg) scale(1.3);
+    }
+    label.star:before {
+    content: '\f006';
+    font-family: FontAwesome;
+    }
+    .padding-top-25 {
+    padding-top: 25px;
+    }
+    
+    .margin-top-5 {
+    margin-top: 5px;
+    }
+    .fielderror, .datatype, .charcount {
+    display: none;
+    }
+    .star-color{
+    color: #FFD600;
+    }
+    .card-hover:hover{
+    border-style: solid;
+    border-color: #DFDFDF;
+    border-width: 1px;
+    }
+    #map {
+    width: 100%;
+    height: 250px;
+    background-color: grey;
+    }
+    .pop{
+    animation: pop 0.3s linear 1;
+    color: #FE2E64;
+    /*color: red;*/
+    }
+    .sellOnlyShop{
+    color: #FE2E64;
+    
+    }
+    @keyframes pop{
+    50%  {transform: scale(1.2);}
+    }
+    .sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 150px;
+  right: 0;
+  /*padding: -20px;*/
+  /*float: right;*/
+
+  /*align-content: right;*/
+}
+    .uk-button-add-cart {
+        background-color: #d9534f;
+        color:white;
+    }
+    .uk-button-add-cart:hover{
+        color: white;
+        background-color: #ef2121;
+    }
+    .footer {
+   position: absolute;
+  /* left: 0;*/
+    bottom: 0;
+   /*padding: 10px;*/
+   width: 100%;
+   
+}
+  </style>
+    <!-- style="width: 100px;height: 100px" -->
+            <div class="sidebar uk-align-right" >
+    <div class="uk-offcanvas-content">
+        {% if item_in_cart %}
+        
+        <a href="">
+            <i class="fa fa-shopping-cart fa-2x"  uk-toggle="target: #offcanvas-flip">
+                <span style=" margin-top: -30px;margin-left: -15px" class="uk-badge uk-text-large" id="basket">{{item_in_cart}}</span>
+            </i>
+        </a>
+        {% else %}
+
+        
+        <a href="">
+            <i class="fa fa-shopping-cart fa-2x"  uk-toggle="target: #offcanvas-flip">
+                <span style=" margin-top: -30px;margin-left: -15px" class="uk-badge uk-text-large" id="basket">0</span>
+            </i>
+        </a>
+        {% endif %}
+    
+        <div id="offcanvas-flip" uk-offcanvas="flip: true; overlay: true">
+            <div class="uk-offcanvas-bar">
+                <button  class="uk-offcanvas-close" type="button" uk-close></button>
+                <h3 style="z-index: 980;" uk-sticky="bottom: #offset" >ตะกร้าของฉัน 
+                    <i class="   fa fa-shopping-basket"></i>
+                </h3>
+                <table style= "position: relative;overflow: hidden;height: 3.2em;" class="uk-table uk-table-divider">
+{% if item_in_cart %}
+{% for o in output %}
+
+ <tbody id="basket_item" >
+     
+      <tr id="tableRow"><td>฿ {{o.price}} </td><td>{{o.name}} </td><td>x {{o.amount}} </td></tr>
+ </tbody>
+ 
+          {% endfor %}
+                  {% endif %}
+                  <tbody id="basket_item" >
+     
+      
+ </tbody>
+              
+                </table>
+
+      
+       
+                {% if item_in_cart %}
+
+            
+                <form action="{% url 'ud_checkout' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+              
+                    <button name=""  class="uk-margin-top   uk-button  uk-width-1-1@s add_to_cart" >
+                        <h2 class="uk-margin-small-top">  ยืนยันการสั่งซื้อ </h2>
+                    </button>
+                </form>
+                {% endif %}
+
+         
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container ">
+
+        <div class="uk-card uk-card-default  uk-margin-top" >
+         
+        
+                <div class="uk-container ">
+                    <!--     <hr ><h2 class="uk-heading-bullet uk-margin-remove-top ">เมนูแนะนำ </h2><table class="uk-table "><tbody><tr ><td class="uk-width-1-5 uk-text-right">เพศ : </td><td class="uk-table-expand"> {{dis.sex}}</td></tr><tr><td class="uk-text-right ">อายุ : </td><td class="uk-table-expand">{{dis.age}}</td></tr></tbody></table> -->
+                    <hr>
+                        <h2 class="uk-heading-bullet uk-margin-remove-top ">รายการอาหาร </h2>
+                        <br>
+                            <div class="uk-child-width-1-5@m uk-child-width-1-4@s   uk-grid-match" uk-grid>
+        {% for menu in menues %}
+        
+                                <!-- <form action="" method="post" enctype="multipart/form-data"> -->
+            {% csrf_token %}
+            
+                                <div  class="uk-card-default" >
+                                    <p  >{{menu.name}}</p>
+                                    <p>ราคา {{menu.price}} ฿</p>
+                                    <button  name="{{menu.id}}"  class="uk-margin-top uk-text-right uk-button uk-button-add-cart uk-width-1-1@s add_to_cart" style="color: white;">
+                                        <h2 class="uk-margin-small-top">  {{menu.price}} บาท 
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                            <span class="glyphicon glyphicon-shopping-cart"></span>
+                                        </h2>
+                                    </button>
+                                </div>
+                                <!--  -->
+                                <!-- </form> -->
+                        {% endfor %}
+
+          
+   
+        
+             
+                            </div>
+                        </div>
+                   
+                    <br>
+                    </div>
+                </div>
+                <script>
+
+
+$(document).ready(function(){
+
+// alert("earn");
+$(".add_to_cart").on("click", function() {
+
+var menu_id = $(this).attr('name');
+// alert("menu_id"+menu_id);
+// var love_btn = $(this);
+// var id = $(this).attr('id');
+
+// love_btn.toggleClass("pop");
+
+
+$.ajax({
+type: "GET",
+url: "{% url 'add_to_cart' %}",
+data: {'menu_id': menu_id, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+dataType: "json",
+success: function(response) {
+
+
+// alert("a"+response.output_list);
+
+// $("#basket_item").text($(response.table));
+$("#basket").text(response.item_in_cart);
+$('#basket_item').html(response.table);
+// $('#tableRow').display('none');
+$('#tableRow').hide();
+
+
+
+
+}
+});
+});
+});
+
+
+$(document).ready(function(){
+
+// alert("earn");
+$(".like").on("click", function() {
+
+var pk = $(this).attr('name');
+var love_btn = $(this);
+var id = $(this).attr('id');
+
+love_btn.toggleClass("pop");
+
+
+$.ajax({
+type: "POST",
+url: "{% url 'like_button' %}",
+data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+dataType: "json",
+success: function(response) {
+love_btn.html(" "+response.likes_count+" อยากกิน");
+
+}
+});
+});
+});
+</script>
+
+{% endblock %}

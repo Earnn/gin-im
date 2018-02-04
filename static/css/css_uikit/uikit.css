@@ -5226,7 +5226,7 @@ ul.uk-nav-sub {
   box-sizing: border-box;
   width: 270px;
   padding: 20px 20px;
-  background: #222;
+  background: white;
   /* 3 */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;

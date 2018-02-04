@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, Textarea,TextInput,FileInput,ChoiceField,Select
 from datetime import datetime
 from django.contrib.postgres.fields import ArrayField
+from django.utils.translation import ugettext_lazy as _
 
 # Create your models here.
 
@@ -27,11 +28,11 @@ class Store(models.Model):
 	social = models.CharField(max_length=100,blank=True,null=True)
 	likes = models.ManyToManyField(User, related_name="likes",blank=True,null=True)
 	delivery_boundary = models.CharField(max_length=1000,blank=True,null=True)
-	delivery_payment = models.CharField(max_length=20,blank=True,null=True)
+	delivery_payment = models.CharField(max_length=2000,blank=True,null=True)
 	created_by = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
 
 
-	def __unicode__(self):
+	def __str__(self):
 		return "%s"%(self.name)
 
 	@property
@@ -47,6 +48,23 @@ class Menu(models.Model):
 	created_by = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
 	def __unicode__(self):
 		return "%s"%(self.name)
+
+class NightCanteen(models.Model):
+	store = models.ForeignKey(Store,on_delete=models.SET_NULL,blank=True,null=True)
+	
+	
+class Cart(models.Model):
+    creation_date = models.DateTimeField(verbose_name=_('creation date'))
+    checked_out = models.BooleanField(default=False, verbose_name=_('checked out'))
+
+    class Meta:
+        verbose_name = _('cart')
+        verbose_name_plural = _('carts')
+        ordering = ('-creation_date',)
+
+    def __unicode__(self):
+        return unicode(self.creation_date)
+
 
 class Order(models.Model):
 	store = models.ForeignKey(Store,on_delete=models.SET_NULL,blank=True,null=True)

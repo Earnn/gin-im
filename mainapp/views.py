@@ -7,16 +7,393 @@ from django.contrib.postgres.search import SearchVector,TrigramSimilarity,Search
 from django.db.models import Avg
 import math
 from django.http import JsonResponse
+from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.contrib.sessions.models import Session
 from datetime import date
 import datetime
-from django.core import serializers
 from datetime import  timedelta
 from django.core.paginator import Paginator
+# from .cart import Cart
+# from myproducts.models import Product
 # import calendar
+
+
+# def add_to_cart(request, menu_id, quantity):
+# 	# force quantity = 1
+# 	if request.method == 'POST':
+
+# 		# request.session['mycart']= menu_id
+# 		# del request.session['mycart']
+# 		menu_list = []
+# 		print("test",request.session.get('mycart',[]))
+# 		menu_list = request.session.get('mycart',[])
+# 		print("type",type(menu_list))
+# 		menu_list.append(menu_id)
+# 		request.session['mycart'] = menu_list
+
+
+# 		print("menu_id",menu_id)
+# 		print("quantity",quantity)
+# 		print("session",request.session.get('mycart'))
+# 	# menu = Menu.objects.get(id=menu_id)
+# 	# cart = Cart(request)
+# 	# cart.add(menu, menu.price, quantity)
+
+# 	# render(request, 'stores.html',)
+# 		next_page = "/store/พินิจโต้รุ่ง/"+str(quantity)
+# 		# return redirect('about_us')
+# 		return HttpResponseRedirect(next_page)
+	
+		
+def add_to_cart(request):
+	# force quantity = 1
+	if request.is_ajax():
+
+		menu_id = request.GET.get('menu_id',False)
+		print(menu_id)
+
+		# request.session['mycart']= menu_id
+		# del request.session['mycart']
+		# menu_list = []
+		print("test",request.session.get('mycart',[]))
+		menu_list = request.session.get('mycart',[])
+		print("type",type(menu_list))
+		menu_list.append(menu_id)
+		request.session['mycart'] = menu_list
+
+
+		print("menu_id",menu_id)
+	
+		print("session",request.session.get('mycart'))
+		item_in_cart = len(request.session.get('mycart'))
+		output_list = []
+		str_tr = "  <tr><td>฿ 20 </td><td>ชื่อ </td><td>x amount </td></tr>"
+		table = []
+		# for menu_id in reversed(request.session['mycart']):
+		my_item_in_cart = request.session.get('mycart',[])
+		my_dict = {i:my_item_in_cart.count(i) for i in my_item_in_cart}
+		print("my_dict",my_dict)
+		for m_id,amount in my_dict.items():
+
+			menu = Menu.objects.get(id=m_id)
+			print("name",menu.name)
+			temp = str_tr.replace("ชื่อ",menu.name)
+
+			temp2 = temp.replace("amount",str(amount))
+			str_table = temp2.replace("20",str(int(menu.price)*int(amount)))
+			table.append(str_table)
+
+			# total += int(menu.price)*int(amount)
+			# temp ={"menu_name":"","menu_price":0}
+			
+			# print(menu)
+			# temp["menu_name"] = menu.name
+			# temp["menu_price"] = menu.price
+
+			# output_list.append(temp)
+			# print(output_list)
+
+
+		# return HttpResponse({'item_in_cart':item_in_cart,'output_list':output_list}, content_type="application/json")
+		return JsonResponse({'item_in_cart':item_in_cart,'table':table}, safe=False)
+# 
+def remove_from_cart(request):
+	if request.is_ajax():
+		menu_id = request.GET.get('menu_id',False)
+
+		menu_list = request.session.get('mycart',[])
+		a = [x for x in menu_list if x != str(menu_id)]
+		print("a",a)
+		del request.session['mycart']
+		request.session['mycart'] = a
+
+
+		total=0
+		total_amount = 0
+		output = []
+		my_item_in_cart = request.session.get('mycart',[])
+		my_dict = {i:my_item_in_cart.count(i) for i in my_item_in_cart}
+		print("my_dict",my_dict)
+
+		for m_id,amount in my_dict.items():
+			temp={"name":"","price":0.0,"amount":0,"menu_id":0}
+		
+			total_amount += amount
+		
+			menu = Menu.objects.get(id=m_id)
+			temp['menu_id'] = m_id
+			temp['name'] = menu.name
+			temp['amount'] = amount
+			temp['price'] = int(menu.price)*int(amount)
+			total += int(menu.price)*int(amount)
+			output.append(temp)
+			
+		if total_amount <=3:
+			delivery_charge = 5.0
+		elif total_amount >=4 and total_amount <=5:
+			delivery_charge = 10.0
+		elif total_amount >=6 and total_amount <=7:
+			delivery_charge = 15.0
+		elif total_amount >=8 and total_amount <=9:
+			delivery_charge = 20.0
+		elif total_amount >=10:
+			delivery_charge = 25		
+
+		total+=delivery_charge
+			# menu = Menu.objects.get(id=m_id)
+			# temp['name'] = m_id
+			# temp['name'] = menu.name
+			# temp['amount'] = amount
+			# temp['price'] = int(menu.price)*int(amount)
+			# total += int(menu.price)*int(amount)
+
+			# output.append(temp)
+
+		context = "success"
+		print("gg")
+		print("totl",total)
+		return JsonResponse({'total_price':str(total),'id':menu_id},safe=False)
+
+
+
+def until_dawn_canteen(request,store_name):
+	# collect_session(request,"enter_store","โรงอาหารโต้รุ่ง")
+	output_store = []
+	store = Store.objects.get(name=store_name)
+	menues = Menu.objects.filter(store=store)
+
+	temp = { 'rating_color': 0,'rating_no_color': 0, }
+
+	# edit revoewform
+	reviewForm = ReviewForm()
+	# store = Store.objects.get(id=store_id)
+	# reviews = Review.objects.filter(store=store)
+	output = []
+	print("earn")
+	if request.session.get('mycart',False):
+		item_in_cart = len(request.session.get('mycart'))
+		my_item_in_cart = request.session.get('mycart',[])
+		my_dict = {i:my_item_in_cart.count(i) for i in my_item_in_cart}
+		print("my_dict",my_dict)
+
+		for m_id,amount in my_dict.items():
+			temp={"name":"","price":0.0,"amount":0,"menu_id":0}
+		
+			
+			menu = Menu.objects.get(id=m_id)
+			temp['name'] = m_id
+			temp['name'] = menu.name
+			temp['amount'] = amount
+			temp['price'] = int(menu.price)*int(amount)
+			output.append(temp)
+	else:
+		print("no len")
+		item_in_cart = None	
+
+
+	# print((request.session.get('mycart')))
+	# print(len(request.session.get('mycart')))
+	# item_in_cart = len(request.session.get('mycart'))
+	
+
+	return render(request, 'until_dawn_canteen.html',{'store':store,
+		"menues":reversed(menues) ,'reviewForm':reviewForm,'item_in_cart':item_in_cart,"output":output	})
+	# return render(request, 'night_canteen.html',{'reviewFor,"m':reviewForm,'store_loved_color':store_loved_color,})
+    
+@login_required
+def ud_checkout(request):
+	anythingElseForm = AnythingElseForm()
+	output = []
+	total=0
+	total_amount = 0
+
+			
+	p = Profile.objects.get(user=request.user)
+	delivery_address = p.address 
+	delivery_phone = p.phone_number
+					
+	# a = {"orderlist": [], "price": [], "url_pic": [], "amount": []}
+	my_item_in_cart = request.session.get('mycart',[])
+	my_dict = {i:my_item_in_cart.count(i) for i in my_item_in_cart}
+
+	for m_id,amount in my_dict.items():
+		temp={"name":"","price":0.0,"amount":0,"menu_id":0}
+		total_amount += amount
+		
+		menu = Menu.objects.get(id=m_id)
+		temp['menu_id'] = m_id
+		temp['name'] = menu.name
+		temp['amount'] = amount
+		temp['price'] = int(menu.price)*int(amount)
+		total += int(menu.price)*int(amount)
+		output.append(temp)
+			
+	if total_amount <=3:
+		delivery_charge = 5.0
+	elif total_amount >=4 and total_amount <=5:
+		delivery_charge = 10.0
+	elif total_amount >=6 and total_amount <=7:
+		delivery_charge = 15.0
+	elif total_amount >=8 and total_amount <=9:
+		delivery_charge = 20.0
+	elif total_amount >=10:
+		delivery_charge = 25		
+
+
+
+	total+=delivery_charge
+	print("total",total)
+
+	return  render(request,'ud_checkout.html',{'anythingElseForm':anythingElseForm,
+		'data':json.dumps(output),
+		'output':output,'total':total,'delivery_address':delivery_address,
+		'delivery_phone':delivery_phone,'delivery_charge':delivery_charge})
+
+
+@login_required
+def ud_delivery(request):
+
+
+	if request.is_ajax():
+		address = request.GET.get('address',False)
+		phone_number = request.GET.get('phone_number',False)
+		total_price = request.GET.get('total_price',False)
+		delivery_charge = request.GET.get('delivery_charge',False)
+		code_cou = request.GET.get('code_cou',False)
+		
+
+		order = request.GET.get('data',False)
+		order = json.loads(order)
+		print(address)
+		# print("payment ",payment)
+		menu_list = []
+		amount_list = []
+		
+
+		for item in order :
+			m = Menu.objects.get(id=item['menu_id'],name=item['name'])
+			menu_list.append(m.id)
+			amount_list.append(item['amount'])
+			s = Store.objects.get(name="โรงอาหารโต้รุ่ง")
+		
+		order = Order.objects.create(user=request.user,
+			menu=menu_list,
+			store=s,
+			amount=amount_list,
+			address =address,
+			total=total_price,
+			phone_number=phone_number,)
+		
+
+		# str_order += "==================\n"
+
+			# print("order_id : ",order.id)
+
+		next_page = "ud-select-payment"
+		return JsonResponse({'next_page':next_page,'order_id':order.id},safe=False)
+
+@login_required
+def ud_payment(request,order_id):
+	
+	try:
+		slipForm = SlipPaymentForm()
+		o = Order.objects.get(id=order_id)
+		total = o.total
+		
+		# store=o.store
+		payment_list =[]
+		# pay = Payment.objects.filter(store=store)
+
+		if request.method == 'POST':
+			slipForm = SlipPaymentForm(request.POST,request.FILES)
+			slipForm = SlipPaymentForm(request.POST,request.FILES)
+			if "byCash" in request.POST:
+				print("Earn")
+				slipForm.fields['slip_image'].required = False
+
+			if slipForm.is_valid():
+				str_coupon =""
+				print("o.coupon",o.coupon)
+				if o.coupon !="":
+					try:
+						cou = GetCoupon.objects.get(coupon__code=o.coupon,user=request.user)
+						DisplayHome.objects.create(user=request.user,coupon=cou.coupon)
+						cou.amount -= 1
+						cou.save()
+						code_c = CodeType.objects.get(coupon=cou.coupon)
+						if code_c.code_type == "แถม":
+							str_coupon += code_c.value
+						else:
+							str_coupon += code_c.coupon.msg +" "+code_c.value
+					except :
+						o.coupon =""
+						o.save()
+						sys.exc_clear()
+				# order = Order.objects.filt/er(id=pk)
+				str_order="===== รายการออร์เดอร์ =====\n"
+				payment = ""
+				link_slip = ""
+				if slipForm.cleaned_data['slip_image'] is None:
+					o.payment_method="จ่ายเงินปลายทาง"
+					o.save()
+					# order.update(payment_method="จ่ายเงินปลายทาง")
+					payment="จ่ายเงินปลายทาง"
+				else:
+					o.payment_method="พร้อมเพย์"
+					payment="พร้อมเพย์"
+					o.slip_payment = request.FILES['slip_image']
+					o.save()
+					link_slip = "www.ginimm.com/show-slip-"+str(o.id)
+			
+				
+				for m,a in zip(o.menu,o.amount):
+					menu =Menu.objects.get(id=m)
+					price = int(a) * menu.price
+					str_order += a+" x "+menu.name+" "+str(price) + " บาท\n"
+
+				# if slipForm.cleaned_data['slip_image'] is None:
+				# 	payment = "จ่ายเงินปลายทาง"
+					 
+				# else:
+				# 	payment="พร้อมเพย์"
+				# 	order.update(payment_method="พร้อมเพย์")
+				# 	o.slip_payment = request.FILES['slip_image']
+				# 	o.save()
+					# tempIsPromtPay="ชำระเงินแ"
+				
+				if str_coupon != "":
+					str_order += "ใช้คูปอง" + str_coupon+ " \n"
+
+			
+				str_order += "===================\n"
+				str_order += "ค่าจัดส่ง "+ str(o.delivery_charge)+ " บาท\n"
+				str_order += "ราคารวม "+ str(o.total)+ " บาท\n"
+				str_order += "เบอร์โทรศัพท์ติดต่อ "+o.phone_number +"\n"
+				str_order += "ที่อยู่จัดส่ง "+o.address+"\n"
+				str_order += "วิธีการชำระเงิน "+payment+"\n"
+				str_order += "ขื่อผู้รับ "+request.user.username+"\n"
+				if link_slip != "":
+					str_order+= "สามารถดูสลิปโอนเงินได้ที่นี่ "+link_slip
+				collect_session(request,"สั่งอาหาร",o.id)
+				strdecode = str_order.decode('utf-8')
+				print(strdecode)
+				# line = LineStore.objects.get(name=store.name)
+				# line_bot_api.push_message(line.uid, TextSendMessage(text=strdecode))
+				# line_bot_api.push_message('Ucbb8d9d8af074f86b827b5a55e0b5ded', TextSendMessage(text=strdecode))
+				
+			
+				next_page = "/success/"+str(pk)
+				return HttpResponseRedirect(next_page)
+
+		return render(request, 'ud_payment.html', {'slipForm':slipForm,'store':store,'total':total,})		
+	
+	except Exception as e:
+		messages.error(request, e)
+		raise Http404()
+  
 
 def home(request):
 	display_list = DisplayHome.objects.all()[:10]
@@ -143,7 +520,7 @@ def addMenu(request,pk):
 
 def set_cookie(request,template,dicts):
 	response = render(request, template, dicts)
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		print("User has login")
 	else :
 		if not request.session.session_key:
@@ -238,7 +615,7 @@ def delivery(request):
 
 		for item in order :
 
-			m = Menu.objects.get(store__id=item['store'],name=item['name'])
+			m = Menu.objects.get(id=item['store'],name=item['name'])
 			menu_list.append(m.id)
 			amount_list.append(item['amount'])
 			s = Store.objects.get(id=item['store'])
@@ -326,17 +703,94 @@ def order(request):
     
 
 
+def night_canteen(request,store_name):
+	# collect_session(request,"enter_store","โรงอาหารโต้รุ่ง")
+	output_store = []
+	# toroong = NightCanteen.objects.all()
+	# for s in toroong:
+	# 	temp = {"store_name": "","store_id":0}
+	# 	s.store.id
+	carte1_restaurant = []
+	noodle_restaurant = []
+	appetizer = []
+	beverage = []
+	esan_restaurant = []
+
+	nc_carte1 = NightCanteen.objects.get(store__name="ร้านพี่เอ็กซ์อาหารตามสั่ง")
+	s_carte1 = nc_carte1.store
+	carte1_image_url =s_carte1.image.url
+	carte1_menu = Menu.objects.filter(store=s_carte1).order_by('-id')[:]
+	for m in carte1_menu:
+		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+		temp["store_name"] = s_carte1.name
+		temp["store_id"] = s_carte1.id
+		temp["store_image_url"] = s_carte1.image.url
+		temp["menu_name"] = m.name
+		temp["menu_price"] = m.price
+		carte1_restaurant.append(temp)
+		# temp["menu_name"] = carte1_menu.name
+
+	nc_carte2 = NightCanteen.objects.get(store__name="พินิจโต้รุ่ง")
+	s_carte2 = nc_carte2.store
+	carte2_image_url =s_carte2.image.url
+
+
+	nc_noodle1 = NightCanteen.objects.get(store__name="ชาย4หมี่เกี๊ยว")
+	s_noodle1 = nc_noodle1.store
+	noodle1_menu = Menu.objects.filter(store=s_noodle1).order_by('-id')[:]
+	for m in noodle1_menu:
+		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+		temp["store_name"] = s_noodle1.name
+		temp["store_id"] = s_noodle1.id
+		temp["store_image_url"] = s_noodle1.image.url
+		temp["menu_name"] = m.name
+		temp["menu_price"] = m.price
+		noodle_restaurant.append(temp)
+
+
+	nc_appetizer1 = NightCanteen.objects.get(store__name="ANWAR BURGER")
+	s_appetizer1 = nc_appetizer1.store
+	appetizer1_menu = Menu.objects.filter(store=s_appetizer1).order_by('-id')[:]
+	for m in appetizer1_menu:
+		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+		temp["store_name"] = s_appetizer1.name
+		temp["store_id"] = s_appetizer1.id
+		temp["store_image_url"] = s_appetizer1.image.url
+		temp["menu_name"] = m.name
+		temp["menu_price"] = m.price
+		appetizer.append(temp)
+	# print("test",test.store.name)
+	temp = { 'rating_color': 0,'rating_no_color': 0, }
+
+	# edit revoewform
+	reviewForm = ReviewForm()
+	# store = Store.objects.get(id=store_id)
+	# reviews = Review.objects.filter(store=store)
+
+	
+
+	return render(request, 'night_canteen.html',{'carte1_restaurant':carte1_restaurant,
+		"noodle_restaurant":noodle_restaurant,
+		"appetizer":appetizer,"carte1_image_url":carte1_image_url,"carte2_image_url":carte2_image_url})
+	# return render(request, 'night_canteen.html',{'reviewFor,"m':reviewForm,'store_loved_color':store_loved_color,})
+    
+
 
 
 # @login_required
-def shop(request, pk):
+def shop(request ,store_name, store_id):
 
-	collect_session(request,"enter_store",pk)
+
+	collect_session(request,"enter_store",store_id)
+
+	item_in_cart = len(request.session.get('mycart'))
+
+	print("instore")
 
 	temp = { 'rating_color': 0,'rating_no_color': 0, }
 	reviewForm = ReviewForm()
 	# print("name:", string)
-	store = Store.objects.get(id=pk)
+	store = Store.objects.get(id=store_id)
 	time_status = 0
 	delivery = False
 	if "delivery" in store.tags :
@@ -449,9 +903,9 @@ def shop(request, pk):
 	rate = []
 	profile_picture = []
 	store_loved_color = None
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		user = request.user
-		store = get_object_or_404(Store, id=pk)
+		store = get_object_or_404(Store, id=store_id)
 		if store.likes.filter(id=user.id).exists():
 			store_loved_color= True
 		else:
@@ -483,7 +937,7 @@ def shop(request, pk):
 		            comment = reviewForm.cleaned_data['comment'],
 		            rating = star,)
 				DisplayHome.objects.create(user=request.user,review=review)
-				next_page = "/store/"+str(pk)
+				next_page = "/store/"+str(store_id)
 				return HttpResponseRedirect(next_page)
 		elif "order" in request.POST:
 			print("order post")
@@ -495,7 +949,7 @@ def shop(request, pk):
 				temp = {'name': '', 'url_pic' : '', 'amount': 0,"store":store}
 				# print("id",m.id)
 				if request.POST.get(str(m.id)) is  None:
-					next_page = "/store/"+str(pk)
+					next_page = "/store/"+str(store_id)
 					return HttpResponseRedirect(next_page)
 					# pass
 
@@ -547,8 +1001,14 @@ def shop(request, pk):
 				'output':output,'total':total,'delivery_address':delivery_address,
 				'delivery_phone':delivery_phone,'store':store,'delivery_charge':delivery_charge})
 
+	if store_name == "โรงอาหารโต้รุ่ง" and store_id == '1':
+		return render(request,'night_canteen.html',{'reviewForm':reviewForm,'menues':reversed(menues2),'mobile_menues':reversed(menues2),
+		'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,'store_loved_color':store_loved_color,'time_status':time_status})
 
-	return render(request,'stores.html',{'reviewForm':reviewForm,'username':request.user.username,'menues':reversed(menues2),'mobile_menues':reversed(menues2),
+	
+
+
+	return render(request,'stores.html',{'item_in_cart':item_in_cart,'reviewForm':reviewForm,'username':request.user.username,'menues':reversed(menues2),'mobile_menues':reversed(menues2),
 		'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,'store_loved_color':store_loved_color,'time_status':time_status})
 
 
@@ -660,7 +1120,7 @@ def searchBycate(request,cate):
 
 			temp['love'] = s.total_likes
 			
-			if request.user.is_authenticated():
+			if request.user.is_authenticated:
 				user = request.user
 				store = get_object_or_404(Store, id=s.id)
 				if store.likes.filter(id=user.id).exists():
@@ -748,7 +1208,7 @@ def searchAll(request):
 
 			temp['love'] = s.total_likes
 			
-			if request.user.is_authenticated():
+			if request.user.is_authenticated:
 				user = request.user
 				store = get_object_or_404(Store, id=s.id)
 				if store.likes.filter(id=user.id).exists():
@@ -862,7 +1322,7 @@ def outofstock(request):
     return render(request, 'outofstock.html',{'menues':reversed(menulist),'store':store,'mobile_menues':reversed(menulist)})
 
 def collect_session(request,act,val):
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		User_session.objects.create(user=request.user,action=act,value=val)
 	else :
 		if 'name' in request.COOKIES:

@@ -157,7 +157,15 @@
     @keyframes pop{
     50%  {transform: scale(1.2);}
     }
-    
+    .sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 150px;
+  right: 0;padding: 20px;
+  /*float: right;*/
+
+  /*align-content: right;*/
+}
     </style>
     <hr class="uk-box-shadow-medium ">
     <div class="container " id="home" >
@@ -165,15 +173,40 @@
             <ul class="uk-breadcrumb uk-width-auto uk-margin-remove-bottom">
                 <li><a href="{% url 'home' %}" class="textBreadCrum">Home</a></li>
                 <li><a href="{% url 'search_cate' cate=category %}" class="textBreadCrum">{{category}}</a></li>
-                <li><span href="../store/{{store.name}}" class="textBreadCrum">{{store.name}}</span></li>
+                <li><span href="store/{{store.name}}" class="textBreadCrum">{{store.name}}</span></li>
                 
                 
                 
             </ul>
         </div>
     </div>
-    
+ 
+
+           <div class="sidebar uk-align-right" >
+      <div class="uk-offcanvas-content">
+
+<a href=""><i class="fa fa-shopping-cart fa-2x"  uk-toggle="target: #offcanvas-flip"> <span style=" margin-top: -30px;margin-left: -15px" class="uk-badge ">1</span></i> </a>
+    <div id="offcanvas-flip" uk-offcanvas="flip: true; ">
+        <div class="uk-offcanvas-bar uk-background-default ">
+
+            <button  style="color: black" class="uk-offcanvas-close" type="button" uk-close></button>
+
+            <h3 style="color: black" >Title</h3>
+
+            <p class="canvasColor">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+        </div>
+    </div>
+
+</div> 
+    </div>
     <div class="container " id="home" >
+           <div class="uk-align-right" style="z-index: 980;" uk-sticky="bottom: #offset">
+
+                               
+           </div>
+
+
            <h1 class="uk-heading-divider  uk-heading-bullet uk-margin-remove-top">{{store.name}} <span >
         {% if user.is_authenticated %}
                                       {% if store_loved_color   %}
@@ -224,7 +257,7 @@
                     
                     {% if store.qrcode %}<p class="imgCrop">
                         
-                        <img src="../{{store.qrcode.url}}" style="width: 150px;height: 150px" alt="{{store.name}}" />
+                        <img src="{{store.qrcode.url}}" style="width: 150px;height: 150px" alt="{{store.name}}" />
                         
                     </p>
                 {% endif %}
@@ -257,6 +290,7 @@
 </ul>
 
 <br>
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="uk-child-width-1-4@m uk-child-width-1-4@s  uk-grid-collapse uk-grid-match" uk-grid>
@@ -264,9 +298,9 @@
             <div >
                 <div class="uk-card-default uk-card uk-card-hover  " >
                     <div class="uk-card-media-top" uk-lightbox >
-                        <a href="../{{menu.image.url}}">
+                        <a href="{{menu.image.url}}">
                             <div class="imgCrop">
-                                <img src=" ../{{menu.image.url}}" class="inImg" alt="{{menu.name}}" />
+                                <img src=" {{menu.image.url}}" class="inImg" alt="{{menu.name}}" />
                             </div>
                         </a>
                     </div>
@@ -357,9 +391,9 @@
                 <div class="uk-card uk-card-default uk-card-body uk-padding-small">
                     <div class="uk-column-1-2" >
                         <div class="uk-width-1-1 " uk-lightbox>
-                            <a href="../{{menu.image.url}}">
+                            <a href="{{menu.image.url}}">
                                 <div class="imgCrop-mobile">
-                                    <img src="../{{menu.image.url}}"  class="uk-inline inImg-mobile" alt="{{menu.name}}" />
+                                    <img src="{{menu.image.url}}"  class="uk-inline inImg-mobile" alt="{{menu.name}}" />
                                 </div>
                             </a>
                             
@@ -493,14 +527,14 @@
                 <header class="uk-comment-header uk-grid-medium uk-flex-middle" uk-grid>
                     <div class="uk-width-auto">
                         <div class="">
-                            <img class="uk-comment-avatar " src="../{{picture}}" style="object-fit: cover;" alt="">
+                            <img class="uk-comment-avatar " src="{{picture}}" style="object-fit: cover;" alt="">
                         </div>
                         
                     </div>
                     <div class="uk-width-expand">
                         
                         <h4 class="uk-card-title uk-text-left " style="color: #BDBDBD;">
-                        <!-- <a  href="../store/{{store.name}}" class="store-name"></a> -->
+                        <!-- <a  href="store/{{store.name}}" class="store-name"></a> -->
                         <!-- </form> -->
                         <a href=" "></a>
                         <div class="uk-margin-remove-top">

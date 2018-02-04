@@ -73,3 +73,9 @@ admin.site.register(DeliveryTime, DeliveryTimeAdmin)
 class DisplayHomeAdmin(admin.ModelAdmin):
 	list_display=[f.name for f in DisplayHome._meta.fields]
 admin.site.register(DisplayHome, DisplayHomeAdmin)
+
+
+
+class NightCanteenAdmin(admin.ModelAdmin):
+	list_display=[f.name for f in NightCanteen._meta.fields]
+admin.site.register(NightCanteen, NightCanteenAdmin)

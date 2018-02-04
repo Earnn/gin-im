@@ -677,6 +677,18 @@
    .star-color{
     color: #FFD600;
     }
+    .canvasColor {
+        color: black;
+    }
+    .badge {
+        top: -20px;
+    
+  padding-left: 10px;
+  padding-right: 10px;
+  -webkit-border-radius: 9px;
+  -moz-border-radius: 9px;
+  border-radius: 50%;
+}
         </style>
          <a id="totop" href="#top" uk-scroll uk-totop></a>
         {% if user.is_authenticated %}
@@ -710,8 +722,8 @@
                                        </a>
                                     
                                 </li>
-                                <li><a href="{% url 'profile' %}">{{user.username}} </a>  
-                                   
+                                <li>
+                        
                                  </li>
                               
                             </ul>
