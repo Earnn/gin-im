@@ -46,8 +46,64 @@ from django.core.paginator import Paginator
 # 		next_page = "/store/พินิจโต้รุ่ง/"+str(quantity)
 # 		# return redirect('about_us')
 # 		return HttpResponseRedirect(next_page)
-	
-		
+@login_required
+def change_status(request):
+
+ if request.method == 'POST':
+  status = int(request.POST.get('status', None))
+  order_id = int(request.POST.get('order_id', None))
+  
+  s = "รับออเดอร์"
+  print(order_id)
+  print(status)
+  if status == 0 :
+   s = "รับออเดอร์"
+   print(s)
+
+  elif status == 1: 
+   s = "กำลังทำอาหาร"
+   print(s)
+
+  elif status == 2 :
+   s = "กำลังส่ง"
+   print(s)
+
+
+  
+  # print(s)
+  Order.objects.filter(id=order_id).update(status=s)
+
+
+
+ return JsonResponse({},safe=False)	
+
+@login_required
+def update_status(request):
+ order = Order.objects.all().order_by('-id')
+
+ order_list = []
+
+ for i in order :
+  temp = {'id':0,'name':"",'menu_amount':[],'total':0,'status':""}
+  temp['id'] = i.id
+  temp['name'] = i.store.name
+  temp['total'] = i.total
+  temp['status'] = i.status
+  for m,a in zip(i.menu,i.amount):
+
+   # ma = {'menu':None,'amount':""}
+   ma = {'menu':Menu.objects.get(id=m),'amount':a}
+   temp['menu_amount'].append(ma)
+ #         #             menu_list.append(Menu.objects.get(id=m))
+ #         #             amount_list.append(a)
+
+  order_list.append(temp)
+
+
+ return render(request, 'update_status.html',{'order_list':order_list})
+def home_tohrung(request):
+	return render(request, 'midnight.html',{})
+
 def add_to_cart(request):
 	# force quantity = 1
 	if request.is_ajax():
@@ -161,13 +217,39 @@ def remove_from_cart(request):
 
 def until_dawn_canteen(request,store_name):
 	# collect_session(request,"enter_store","โรงอาหารโต้รุ่ง")
+
 	output_store = []
 	store = Store.objects.get(name=store_name)
 	menues = Menu.objects.filter(store=store)
 
-	temp = { 'rating_color': 0,'rating_no_color': 0, }
 
-	# edit revoewform
+	reviews = Review.objects.filter(store=store)
+	# getreview and love
+
+	temp = { 'rating_color': 0,'rating_no_color': 0, }
+	rate = []
+	profile_picture = []
+	store_loved_color = None
+	if request.user.is_authenticated:
+		user = request.user
+		store = get_object_or_404(Store, id=store.id)
+		if store.likes.filter(id=user.id).exists():
+			store_loved_color= True
+		else:
+			store_loved_color = None
+
+	for i in reviews:
+		temp['rating_color'] = i.rating
+		temp['rating_no_color'] = 5 - temp['rating_color']
+		rate.append(temp)
+		try :
+			profile_picture.append(Profile.objects.get(user=i.user).picture.url)
+		except:
+			raise
+			# raise Http404
+
+	out = zip(reviews,rate,profile_picture)
+
 	reviewForm = ReviewForm()
 	# store = Store.objects.get(id=store_id)
 	# reviews = Review.objects.filter(store=store)
@@ -184,7 +266,7 @@ def until_dawn_canteen(request,store_name):
 		
 			
 			menu = Menu.objects.get(id=m_id)
-			temp['name'] = m_id
+			temp['menu_id'] = m_id
 			temp['name'] = menu.name
 			temp['amount'] = amount
 			temp['price'] = int(menu.price)*int(amount)
@@ -193,14 +275,36 @@ def until_dawn_canteen(request,store_name):
 		print("no len")
 		item_in_cart = None	
 
+	if request.method == 'POST':
+		if "review" in request.POST:
+			try:
+				star = request.POST['star']
+			except Exception as e:
+				star = 0;
+			
+			
+			print ("star: ",star)
+			reviewForm = ReviewForm(request.POST, request.FILES)
+			if reviewForm.is_valid():
+				review = Review.objects.create(
+		            user = request.user,
+		            store = store,
+		            comment = reviewForm.cleaned_data['comment'],
+		            rating = star,)
+				DisplayHome.objects.create(user=request.user,review=review)
+				next_page = "/โรงอาหารโต้รุ่ง/"+store_name
+				return HttpResponseRedirect(next_page)
 
 	# print((request.session.get('mycart')))
 	# print(len(request.session.get('mycart')))
 	# item_in_cart = len(request.session.get('mycart'))
-	
+	# 'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,
+	# 	'store_loved_color':store_loved_color,
 
 	return render(request, 'until_dawn_canteen.html',{'store':store,
-		"menues":reversed(menues) ,'reviewForm':reviewForm,'item_in_cart':item_in_cart,"output":output	})
+		"menues":reversed(menues) ,"mobile_menues":reversed(menues),'reviewForm':reviewForm,
+		'item_in_cart':item_in_cart,"output":output	,'store_loved_color':store_loved_color,
+		'reviews':reviews,'out':out,})
 	# return render(request, 'night_canteen.html',{'reviewFor,"m':reviewForm,'store_loved_color':store_loved_color,})
     
 @login_required
@@ -703,76 +807,76 @@ def order(request):
     
 
 
-def night_canteen(request,store_name):
-	# collect_session(request,"enter_store","โรงอาหารโต้รุ่ง")
-	output_store = []
-	# toroong = NightCanteen.objects.all()
-	# for s in toroong:
-	# 	temp = {"store_name": "","store_id":0}
-	# 	s.store.id
-	carte1_restaurant = []
-	noodle_restaurant = []
-	appetizer = []
-	beverage = []
-	esan_restaurant = []
+# def night_canteen(request,store_name):
+# 	# collect_session(request,"enter_store","โรงอาหารโต้รุ่ง")
+# 	output_store = []
+# 	# toroong = NightCanteen.objects.all()
+# 	# for s in toroong:
+# 	# 	temp = {"store_name": "","store_id":0}
+# 	# 	s.store.id
+# 	carte1_restaurant = []
+# 	noodle_restaurant = []
+# 	appetizer = []
+# 	beverage = []
+# 	esan_restaurant = []
 
-	nc_carte1 = NightCanteen.objects.get(store__name="ร้านพี่เอ็กซ์อาหารตามสั่ง")
-	s_carte1 = nc_carte1.store
-	carte1_image_url =s_carte1.image.url
-	carte1_menu = Menu.objects.filter(store=s_carte1).order_by('-id')[:]
-	for m in carte1_menu:
-		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
-		temp["store_name"] = s_carte1.name
-		temp["store_id"] = s_carte1.id
-		temp["store_image_url"] = s_carte1.image.url
-		temp["menu_name"] = m.name
-		temp["menu_price"] = m.price
-		carte1_restaurant.append(temp)
-		# temp["menu_name"] = carte1_menu.name
+# 	nc_carte1 = NightCanteen.objects.get(store__name="ร้านพี่เอ็กซ์อาหารตามสั่ง")
+# 	s_carte1 = nc_carte1.store
+# 	carte1_image_url =s_carte1.image.url
+# 	carte1_menu = Menu.objects.filter(store=s_carte1).order_by('-id')[:]
+# 	for m in carte1_menu:
+# 		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+# 		temp["store_name"] = s_carte1.name
+# 		temp["store_id"] = s_carte1.id
+# 		temp["store_image_url"] = s_carte1.image.url
+# 		temp["menu_name"] = m.name
+# 		temp["menu_price"] = m.price
+# 		carte1_restaurant.append(temp)
+# 		# temp["menu_name"] = carte1_menu.name
 
-	nc_carte2 = NightCanteen.objects.get(store__name="พินิจโต้รุ่ง")
-	s_carte2 = nc_carte2.store
-	carte2_image_url =s_carte2.image.url
-
-
-	nc_noodle1 = NightCanteen.objects.get(store__name="ชาย4หมี่เกี๊ยว")
-	s_noodle1 = nc_noodle1.store
-	noodle1_menu = Menu.objects.filter(store=s_noodle1).order_by('-id')[:]
-	for m in noodle1_menu:
-		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
-		temp["store_name"] = s_noodle1.name
-		temp["store_id"] = s_noodle1.id
-		temp["store_image_url"] = s_noodle1.image.url
-		temp["menu_name"] = m.name
-		temp["menu_price"] = m.price
-		noodle_restaurant.append(temp)
+# 	nc_carte2 = NightCanteen.objects.get(store__name="พินิจโต้รุ่ง")
+# 	s_carte2 = nc_carte2.store
+# 	carte2_image_url =s_carte2.image.url
 
 
-	nc_appetizer1 = NightCanteen.objects.get(store__name="ANWAR BURGER")
-	s_appetizer1 = nc_appetizer1.store
-	appetizer1_menu = Menu.objects.filter(store=s_appetizer1).order_by('-id')[:]
-	for m in appetizer1_menu:
-		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
-		temp["store_name"] = s_appetizer1.name
-		temp["store_id"] = s_appetizer1.id
-		temp["store_image_url"] = s_appetizer1.image.url
-		temp["menu_name"] = m.name
-		temp["menu_price"] = m.price
-		appetizer.append(temp)
-	# print("test",test.store.name)
-	temp = { 'rating_color': 0,'rating_no_color': 0, }
+# 	nc_noodle1 = NightCanteen.objects.get(store__name="ชาย4หมี่เกี๊ยว")
+# 	s_noodle1 = nc_noodle1.store
+# 	noodle1_menu = Menu.objects.filter(store=s_noodle1).order_by('-id')[:]
+# 	for m in noodle1_menu:
+# 		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+# 		temp["store_name"] = s_noodle1.name
+# 		temp["store_id"] = s_noodle1.id
+# 		temp["store_image_url"] = s_noodle1.image.url
+# 		temp["menu_name"] = m.name
+# 		temp["menu_price"] = m.price
+# 		noodle_restaurant.append(temp)
 
-	# edit revoewform
-	reviewForm = ReviewForm()
-	# store = Store.objects.get(id=store_id)
-	# reviews = Review.objects.filter(store=store)
+
+# 	nc_appetizer1 = NightCanteen.objects.get(store__name="ANWAR BURGER")
+# 	s_appetizer1 = nc_appetizer1.store
+# 	appetizer1_menu = Menu.objects.filter(store=s_appetizer1).order_by('-id')[:]
+# 	for m in appetizer1_menu:
+# 		temp = {"store_name":"","store_id":0,"store_image_url":None,"menu_name":"","menu_id":0,"menu_price":0}
+# 		temp["store_name"] = s_appetizer1.name
+# 		temp["store_id"] = s_appetizer1.id
+# 		temp["store_image_url"] = s_appetizer1.image.url
+# 		temp["menu_name"] = m.name
+# 		temp["menu_price"] = m.price
+# 		appetizer.append(temp)
+# 	# print("test",test.store.name)
+# 	temp = { 'rating_color': 0,'rating_no_color': 0, }
+
+# 	# edit revoewform
+# 	reviewForm = ReviewForm()
+# 	# store = Store.objects.get(id=store_id)
+# 	# reviews = Review.objects.filter(store=store)
 
 	
 
-	return render(request, 'night_canteen.html',{'carte1_restaurant':carte1_restaurant,
-		"noodle_restaurant":noodle_restaurant,
-		"appetizer":appetizer,"carte1_image_url":carte1_image_url,"carte2_image_url":carte2_image_url})
-	# return render(request, 'night_canteen.html',{'reviewFor,"m':reviewForm,'store_loved_color':store_loved_color,})
+# 	return render(request, 'night_canteen.html',{'carte1_restaurant':carte1_restaurant,
+# 		"noodle_restaurant":noodle_restaurant,
+# 		"appetizer":appetizer,"carte1_image_url":carte1_image_url,"carte2_image_url":carte2_image_url})
+# 	# return render(request, 'night_canteen.html',{'reviewFor,"m':reviewForm,'store_loved_color':store_loved_color,})
     
 
 
@@ -1001,15 +1105,11 @@ def shop(request ,store_name, store_id):
 				'output':output,'total':total,'delivery_address':delivery_address,
 				'delivery_phone':delivery_phone,'store':store,'delivery_charge':delivery_charge})
 
-	if store_name == "โรงอาหารโต้รุ่ง" and store_id == '1':
-		return render(request,'night_canteen.html',{'reviewForm':reviewForm,'menues':reversed(menues2),'mobile_menues':reversed(menues2),
-		'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,'store_loved_color':store_loved_color,'time_status':time_status})
-
-	
 
 
 	return render(request,'stores.html',{'item_in_cart':item_in_cart,'reviewForm':reviewForm,'username':request.user.username,'menues':reversed(menues2),'mobile_menues':reversed(menues2),
-		'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,'store_loved_color':store_loved_color,'time_status':time_status})
+		'reviews':reviews,'out':out,'store':store,'delivery':delivery,'category':cate,
+		'store_loved_color':store_loved_color,'time_status':time_status})
 
 
 

@@ -14,12 +14,15 @@ urlpatterns = [
     # url(r'^profile/?$',views.profile, name='profile'),
     url(r'^delivery/?$',views.delivery, name='delivery'),
     url(r'^ud-delivery/?$',views.ud_delivery, name='ud_delivery'),
+    url(r'^update-status/$', views.update_status, name='update_status'),
+    url(r'^change-status/$', views.change_status, name='change_status'),
+    url(r'^โรงอาหารโต้รุ่ง/$', views.home_tohrung, name='tohrung'),
     
     url(r'^success/(?P<order_id>\d+)/?$',views.success, name='success'),
     url(r'^addStore/?$', views.addStore, name='add_store'),
     url(r'^(?P<pk>\d+)/addMenu/?$', views.addMenu, name='add_menu'),
     url(r'^store/(?P<store_name>.*)/(?P<store_id>\d+)$', views.shop, name='shop'),
-    url(r'^store/โรงอาหารโต้รุ่ง/(?P<store_name>.*)?$', views.until_dawn_canteen, name='until_dawn_canteen'),
+    url(r'^โรงอาหารโต้รุ่ง/(?P<store_name>.*)?$', views.until_dawn_canteen, name='until_dawn_canteen'),
 
     # url(r'^add_to_cart/(?P<menu_iud>\d+)/(?P<quantity>\d+)$', views.add_to_cart, name='add_to_cart'),
     url(r'^add_to_cart/$', views.add_to_cart, name='add_to_cart'),

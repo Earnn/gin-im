@@ -1,25 +1,16 @@
-{% extends 'base.html' %} {% load static %}{% load widget_tweaks %} {% block content %}
-  
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+{% extends 'base.html' %}{% load static %} {% load my_filter_range %}
+{% block content %}
     <style type="text/css">
     
     
     
-    .spinButton :hover{
+    
+    .input-group button:hover{
     background-color:#FFBF00;
     color: white;
     border-color: #FFBF00;
     }
-    .input-group .spinButton:hover{
-    background-color:#FFBF00;
-    color: white;
-    border-color: #FFBF00;
-    }
-    button{
-    background-color:#FFBF00;
-    color: white;
-    border-color: #FFBF00;
-    }
+    
     #custom-search-input {
     margin-left: 25%;
     /*padding: 3px;*/
@@ -79,9 +70,9 @@
     .uk-card-media-top{
     margin-bottom: -25px;
     }
-    a{
+/*    a{
     color: black;
-    }
+    }*/
     #stars {
     font-size: 140px;
     color: #FF0000;
@@ -155,145 +146,398 @@
     color: #FE2E64;
     
     }
+    .uk-offcanvas-bar {
+    background: #fff;
+    color :black;
+    }
+    .sidebar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 150px;
+    right: 0;
+    /*padding: -20px;*/
+    /*float: right;*/
+    /*align-content: right;*/
+    }
+    .uk-button-add-cart {
+    background-color: #d9534f;
+    color:white;
+    }
+    .uk-button-add-cart:hover{
+    color: white;
+    background-color: #ef2121;
+    }
+    .footer {
+    position: absolute;
+    /* left: 0;*/
+    bottom: 0;
+    /*padding: 10px;*/
+    width: 100%;
+    }
+    .add_to_cart {
+    background-color: #d9534f;
+    color:white;
+    }
+    .add_to_cart a:hover{
+    color: white;
+    background-color: #ef2121;
+    }
     @keyframes pop{
     50%  {transform: scale(1.2);}
     }
-    .sidebar {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 150px;
-  right: 0;
-  /*padding: -20px;*/
-  /*float: right;*/
-
-  /*align-content: right;*/
-}
-    .uk-button-add-cart {
-        background-color: #d9534f;
-        color:white;
+    .bg-bottom{
+    background: url('{% static "images/S__6144009.jpg" %}') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     }
-    .uk-button-add-cart:hover{
-        color: white;
-        background-color: #ef2121;
-    }
-    .footer {
-   position: absolute;
-  /* left: 0;*/
-    bottom: 0;
-   /*padding: 10px;*/
-   width: 100%;
-   
-}
-  </style>
-    <!-- style="width: 100px;height: 100px" -->
-            <div class="sidebar uk-align-right" >
-    <div class="uk-offcanvas-content">
-        {% if item_in_cart %}
-        
-        <a href="">
-            <i class="fa fa-shopping-cart fa-2x"  uk-toggle="target: #offcanvas-flip">
-                <span style=" margin-top: -30px;margin-left: -15px" class="uk-badge uk-text-large" id="basket">{{item_in_cart}}</span>
-            </i>
-        </a>
-        {% else %}
 
-        
-        <a href="">
-            <i class="fa fa-shopping-cart fa-2x"  uk-toggle="target: #offcanvas-flip">
-                <span style=" margin-top: -30px;margin-left: -15px" class="uk-badge uk-text-large" id="basket">0</span>
-            </i>
-        </a>
-        {% endif %}
     
-        <div id="offcanvas-flip" uk-offcanvas="flip: true; overlay: true">
-            <div class="uk-offcanvas-bar">
-                <button  class="uk-offcanvas-close" type="button" uk-close></button>
-                <h3 style="z-index: 980;" uk-sticky="bottom: #offset" >ตะกร้าของฉัน 
-                    <i class="   fa fa-shopping-basket"></i>
-                </h3>
-                <table style= "position: relative;overflow: hidden;height: 3.2em;" class="uk-table uk-table-divider">
-{% if item_in_cart %}
-{% for o in output %}
+    </style>
+    <hr class="uk-box-shadow-medium uk-margin-remove-bottom">
 
- <tbody id="basket_item" >
-     
-      <tr id="tableRow"><td>฿ {{o.price}} </td><td>{{o.name}} </td><td>x {{o.amount}} </td></tr>
- </tbody>
- 
-          {% endfor %}
-                  {% endif %}
-                  <tbody id="basket_item" >
-     
-      
- </tbody>
-              
-                </table>
-
-      
-       
-                {% if item_in_cart %}
-
+        
+  
+    <div class="container " id="home" >
+        <div class="breadcrumb uk-margin-small-top" >
+            <ul class="uk-breadcrumb uk-width-auto uk-margin-remove-bottom">
+                <li><a href="{% url 'home' %}" class="textBreadCrum">Home</a></li>
+                <li><a href="{% url 'tohrung'  %}" class="textBreadCrum">โรงอาหารโต้รุ่ง</a></li>
+                <li><span href="../store/{{store.name}}" class="textBreadCrum">{{store.name}}</span></li>
+                
+                
+                
+            </ul>
+        </div>
+    </div>
+    <div class="sidebar uk-align-right" style="
+    z-index: 9998!important;" >
+        <div class="uk-offcanvas-content">
+            {% if item_in_cart %}
+                
+                <a class="uk-link-reset uk-margin-right" uk-toggle="target: #offcanvas-flip"  >
+                    
+                    <i   class="fa fa-shopping-cart fa-2x" >
+                    <span  class="uk-badge uk-text-large "  style=" margin-top: -30px;margin-left: -15px" id="basket">{{item_in_cart}}</span>
+                    </i>
+                    
+                </a>
+            {% else %}
+                
+                <a class="uk-link-reset uk-margin-right" uk-toggle="target: #offcanvas-flip"  >
+                    
+                    <i class="fa fa-shopping-cart fa-2x" >
+                    <span  class="uk-badge uk-text-large "  style=" margin-top: -30px;margin-left: -15px" id="basket">0</span>
+                    </i>
+                    
+                </a>
+            {% endif %}
             
-                <form action="{% url 'ud_checkout' %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-              
-                    <button name=""  class="uk-margin-top   uk-button  uk-width-1-1@s add_to_cart" >
-                        <h2 class="uk-margin-small-top">  ยืนยันการสั่งซื้อ </h2>
-                    </button>
-                </form>
-                {% endif %}
+            <div id="offcanvas-flip" uk-offcanvas="flip: true; " >
+                <div class="uk-offcanvas-bar uk-box-shadow-xlarge"  >
+                    
+                    <button style="color: black" class="uk-offcanvas-close" type="button" uk-close></button>
+                    <h3 class="uk-margin-remove-top" style="color: black" >ตะกร้าของฉัน
+                    <i class="   fa fa-shopping-basket"></i> <a href="{% url 'ud_checkout' %}" style="color: grey;font-size: 14px">แก้ไข</a>
+                    </h3>
+                    
+                    
+                    <table style= "position: relative;overflow: hidden;height: 3.2em;" class="uk-table uk-table-divider uk-table-small " >
+                        {% if item_in_cart %}
+                    
+                            {% for o in output %}
+                                <tbody id="basket_item" >
+                                    
+                                    <tr id="tableRow"><td> <p>฿ {{o.price}}</p> </td>
+                                        <td >{{o.name}} </td>
+                                        <td>x {{o.amount}} </td>
 
-         
+                                    </tr>
+                                </tbody>
+                                
+                            {% endfor %}
+                        {% else %}
+                      
+                           <!--  <div uk-alert>ยังไม่มีของในตะกร้า</div> -->
+                        
+                        <tbody id="basket_item" >
+                            
+                            
+                        </tbody>
+                        {% endif %}
+                    </table>
+                    
+                    
+                    {% if item_in_cart %}
+                        
+                        <form  action="{% url 'ud_checkout' %}" method="post" enctype="multipart/form-data">
+                            
+                            {% csrf_token %}
+                            
+                            <button  class="uk-position-bottom uk-button  uk-width-1-1@s add_to_cart" >
+                            <h2 class="uk-margin-small-top">  ยืนยันการสั่งซื้อ </h2>
+                            </button>
+                        </form>
+                        
+                        
+                    {% endif %}
+                    
+                </div>
             </div>
         </div>
     </div>
-</div>
-    <div class="container ">
+    <div class="uk-section-default " >
+        <div class="uk-section bg-bottom uk-padding-remove-bottom "  >
+            <!-- <div class="uk-container"> -->
+            <br><br><br><br><br><br>
+            <img src="../docs/images/photo.jpg" alt="">
+            <div class="uk-overlay  uk-overlay-primary ">
+                <div class="container " id="home" >
 
-        <div class="uk-card uk-card-default  uk-margin-top" >
-         
-        
-                <div class="uk-container ">
-                    <!--     <hr ><h2 class="uk-heading-bullet uk-margin-remove-top ">เมนูแนะนำ </h2><table class="uk-table "><tbody><tr ><td class="uk-width-1-5 uk-text-right">เพศ : </td><td class="uk-table-expand"> {{dis.sex}}</td></tr><tr><td class="uk-text-right ">อายุ : </td><td class="uk-table-expand">{{dis.age}}</td></tr></tbody></table> -->
-                    <hr>
-                        <h2 class="uk-heading-bullet uk-margin-remove-top ">รายการอาหาร </h2>
-                        <br>
-                            <div class="uk-child-width-1-5@m uk-child-width-1-4@s   uk-grid-match" uk-grid>
-        {% for menu in menues %}
-        
-                                <!-- <form action="" method="post" enctype="multipart/form-data"> -->
-            {% csrf_token %}
-            
-                                <div  class="uk-card-default" >
-                                    <p  >{{menu.name}}</p>
-                                    <p>ราคา {{menu.price}} ฿</p>
-                                    <button  name="{{menu.id}}"  class="uk-margin-top uk-text-right uk-button uk-button-add-cart uk-width-1-1@s add_to_cart" style="color: white;">
-                                        <h2 class="uk-margin-small-top">  {{menu.price}} บาท 
-                                            <span class="glyphicon glyphicon-plus"></span>
-                                            <span class="glyphicon glyphicon-shopping-cart"></span>
-                                        </h2>
-                                    </button>
-                                </div>
-                                <!--  -->
-                                <!-- </form> -->
-                        {% endfor %}
-
-          
-   
-        
-             
-                            </div>
-                        </div>
-                   
-                    <br>
+                    <h1 class=" uk-margin-remove-top">{{store.name}} <span >
+                        {% if user.is_authenticated %}
+                            {% if store_loved_color   %}
+                                <a class="uk-link-reset " ><i id="{{store.name}}"  class="fa fa-heart uk-text-meta uk-text-large  like pop"  aria-hidden="true" name="{{store.id}}" >  <span class="thai_font "> {{ store.total_likes }}  อยากกิน </span></i></a>
+                            {% else %}
+                                <a class="uk-link-reset uk-text-large" ><i id="{{store.id}}"  class="fa fa-heart uk-text-large uk-text-meta  like"  aria-hidden="true" name="{{store.id}}" >  <span class="thai_font  "> {{ store.total_likes }}  อยากกิน </span></i></a>
+                            {% endif %}
+                            
+                        {% else %}
+                            <i   class="fa fa-heart uk-text-meta uk-text-meta  uk-text-large"  aria-hidden="true"  >  <span class="thai_font" > {{ store.total_likes }}  อยากกิน </span></i>
+                            
+                        {% endif %}</span> </h1>
+                        <p ><span class="uk-text-muted"> <i class="fa fa-clock-o" aria-hidden="true"></i> เวลาเปิด - ปิด :</span><span class=""> ทุกวัน {{store.time_open}}  - </span> <span class="">{{store.time_close}}  </span></p>
+                        <p> <span class="uk-text-muted"> <i class="fa fa-phone" aria-hidden="true"></i> ติดต่อเรา :</span> <span class=""> {{store.phone}}  </span></p>
                     </div>
                 </div>
-                <script>
+                
+            </div>
+        </div>
+        <br>
+         <!-- <div class="uk-section uk-section-muted " > -->
+        <div class="container menu-desktop" id="home">
+            <ul class="uk-tab  uk-margin-remove-top" uk-switcher>
+                <li class="uk-active " ><a href="#" id="text-tab"> เมนู </a></li>
+                <li><a href="#" id="text-tab" > อัลบั้ม </a></li>
+                
+            </ul>
+            <ul class="uk-switcher uk-margin">
+                <li>
+                    
+                   
+              <div class="uk-grid-collapse uk-child-width-1-2@s " uk-grid>
+                             {% for menu in menues %}
+                      
+                                {% csrf_token %}
+                        
+                         <div class="uk-card uk-card-hover uk-card-body uk-padding-small uk-padding-remove-bottom">
+                                
+                                <p class="uk-align-left uk-margin-remove">{{menu.name}}</p>
+                                <p class="uk-align-right uk-margin-remove">ราคา {{menu.price}} ฿ <button  name="{{menu.id}}"  class="uk-button  uk-button-small add_to_cart " style="color: white;">
+                                 <span class="glyphicon glyphicon-plus"></span>
+                                </button></p>
+                             <br> 
+                         <hr>
+                        </div>
+                        
 
+                            {% endfor %}
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </li>
+                <li>
+                    
+                </li>
+                
+            </ul>
+         
+    
+            <br>
+        </div>
+        <!-- </div> -->
+        <div class="container menu-mobile" id="home">
+            
+           <ul class="uk-tab  uk-margin-remove-top" uk-switcher>
+                <li class="uk-active " ><a href="#" id="text-tab"> เมนู </a></li>
+                <li><a href="#" id="text-tab" > อัลบั้ม </a></li>
+                
+            </ul>
+            <ul class="uk-switcher uk-margin">
+                <li>
+                    
+                   
+                <div class="uk-grid-collapse  uk-child-width-1-2@s" uk-grid>
+                             {% for menu in mobile_menues %}
+                      
+                                {% csrf_token %}
+                        
+                         <div class="uk-card uk-card-hover uk-card-body uk-padding-small uk-padding-remove-bottom">
+                                
+                                <p class="uk-align-left uk-margin-remove">{{menu.name}}</p>
+                                <p class="uk-align-right uk-margin-remove">ราคา {{menu.price}} ฿ <button  name="{{menu.id}}"  class="uk-button  uk-button-small add_to_cart " style="color: white;">
+                                 <span class="glyphicon glyphicon-plus"></span>
+                                </button></p>
+                             <br> 
+                         <hr>
+                        </div>
+                        
 
-$(document).ready(function(){
-
-// alert("earn");
+                            {% endfor %}
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </li>
+                <li>
+                    
+                </li>
+                
+            </ul>
+            <br>
+        </div>
+        <!--    <div id="modal-sections"  uk-modal>
+            <div class="uk-modal-dialog" style="width: 400px">
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+                <div class="uk-modal-header uk-padding-small uk-padding-remove-top">
+                    <h2 class="uk-modal-title " style="text-align: center">เข้าสู่ระบบด้วย</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <div class="uk-container">
+                        <div class="uk-margin-small">
+                            <a href="{% url 'social:begin' 'facebook' %}" class="uk-width-1-1 uk-button uk-button-default" href="#facebook"  style="background-color: #3B5998;color:white">
+                            <img class="pull-left login-icon " src="{% static "images/facebook.png" %}"/>Facebook</a>
+                        </div>
+                        <div class="uk-margin-small">
+                            <a href="{% url 'social:begin' 'google-oauth2' %}" class="uk-width-1-1 uk-button uk-button-default" style="background-color: #d9534f;color:white" >
+                            <img class="pull-left login-icon " src="{% static "images/google.png" %}"/>Google</a>
+                        </div>
+                        
+                        <div class="uk-margin-small ">
+                            <ul class="uk-subnav uk-subnav-divider uk-margin-left" >
+                                <li><a href="{% url 'login'   %}"  class="uk-button-text" ><h2>เข้าสู่ระบบ</h2></a></li>
+                                <li ><a href="{% url 'signup'  %}" class="uk-button-text" ><h2>สมัครสมาชิก</h2></a> </li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+                <div class="uk-modal-footer uk-text-right thai_font">
+                    <button class="uk-button uk-button-default  uk-modal-close  uk-text" type="button"><h2 class="uk-margin-small-top">ยกเลิก</h2></button>
+                    <button class="uk-button uk-button-primary  uk-text" type="button"><h2 class="uk-margin-small-top">ตกลง</h2></button>
+                </div>
+            </div>
+        </div> -->
+        <div class="container"  id="home">
+            <ul class="uk-tab uk-margin-top " uk-margin>
+                <li class="uk-active" ><a href="#" id="text-tab">รีวิว</a></li>
+                <li><a href="#review" id="text-tab">เขียนรีวิว</a></li>
+                
+            </ul>
+            
+            <A name="review" >
+                <!-- <hr> -->
+                <br>
+                {% for review,rate,picture in out %}
+                    <!-- <div class="<u>    </u>k-card uk-card-default uk-card-body uk-margin"> -->
+                    <article class="uk-comment uk-comment-primary uk-margin-small-bottom" >
+                        <header class="uk-comment-header uk-grid-medium uk-flex-middle" uk-grid>
+                            <div class="uk-width-auto">
+                                <div class="">
+                                    <img class="uk-comment-avatar " src="{{picture}}" style="object-fit: cover;" alt="">
+                                </div>
+                                
+                            </div>
+                            <div class="uk-width-expand">
+                                
+                                <h4 class="uk-card-title uk-text-left " style="color: #BDBDBD;">
+                                <!-- <a  href="../store/{{store.name}}" class="store-name"></a> -->
+                                <!-- </form> -->
+                                <a href=" "></a>
+                                <div class="uk-margin-remove-top">
+                                    {% for value in rate.rating_color|times %}
+                                        <i class="fa fa-star star-color"> </i>
+                                    {% endfor %}
+                                    {% for value in rate.rating_no_color|times %}
+                                        <i class="fa fa-star"> </i>
+                                    {% endfor %}
+                                {{rate.rating_color}}</div>
+                                </h4>
+                                <h4 class="uk-comment-title uk-margin-remove"><a class="uk-link-reset" href="#">{{review.user.username}} ไปร้าน <b>{{store.name}}</b></a></h4>
+                                <ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-remove-top">
+                                    <li><a href="#">{{review.created_at | timesince }}</a></li>
+                                    <!-- <p>{{review.rating}}</p> -->
+                                </ul>
+                            </div>
+                        </header>
+                        <div class="uk-comment-body">
+                            <p class="comment"> {{review.comment}}!</p>
+                        </div>
+                    </article>
+                    <!-- </div> -->
+                {% endfor %}
+                
+            </A>
+            
+            
+        </div>
+        <div class="container" id="home">
+            <ul class="uk-tab" uk-margin>
+                <h2 class="uk-heading-bullet">เขียนรีวิว</h2>
+                
+                
+            </ul>
+            <div class="uk-child-width-1-2@m  uk-text-left uk-margin-large-bottom" uk-grid>
+                
+                <div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="uk-align-left uk-margin-remove-bottom">
+                            <input class="star star-5" id="star-5" value="5" type="radio" name="star" />
+                            <label class="star star-5" for="star-5"></label>
+                            <input class="star star-4" id="star-4" value="4" type="radio" name="star" />
+                            <label class="star star-4" for="star-4"></label>
+                            <input class="star star-3" id="star-3" value="3" type="radio" name="star" />
+                            <label class="star star-3" for="star-3"></label>
+                            <input class="star star-2" id="star-2" value="2" type="radio" name="star" />
+                            <label class="star star-2" for="star-2"></label>
+                            <input class="star star-1" id="star-1" value="1" type="radio" name="star" />
+                            <label class="star star-1" for="star-1"></label>
+                        </div>
+                        
+                        
+                        
+                        
+                        {{ reviewForm.comment }}
+                        <br> <br>
+                        
+                        
+                        <button type="submit" name="review" class="uk-button uk-width-1-1@s uk-width-1-4@m" style="color: white"><h2 class="uk-margin-small-top">โพสต์</h2>
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+      
+        
+        <script>
+        // function initMap() {}
+        $(document).ready(function(){
+         // alert("earn");
 $(".add_to_cart").on("click", function() {
 
 var menu_id = $(this).attr('name');
@@ -312,13 +556,13 @@ dataType: "json",
 success: function(response) {
 
 
-// alert("a"+response.output_list);
+    // alert("a"+response.output_list);
 
-// $("#basket_item").text($(response.table));
-$("#basket").text(response.item_in_cart);
-$('#basket_item').html(response.table);
-// $('#tableRow').display('none');
-$('#tableRow').hide();
+    // $("#basket_item").text($(response.table));
+    $("#basket").text(response.item_in_cart);
+    $('#basket_item').html(response.table);
+    // $('#tableRow').display('none');
+    $('#tableRow').hide();
 
 
 
@@ -326,33 +570,42 @@ $('#tableRow').hide();
 }
 });
 });
-});
-
-
-$(document).ready(function(){
-
-// alert("earn");
-$(".like").on("click", function() {
-
-var pk = $(this).attr('name');
-var love_btn = $(this);
-var id = $(this).attr('id');
-
-love_btn.toggleClass("pop");
-
-
-$.ajax({
-type: "POST",
-url: "{% url 'like_button' %}",
-data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-dataType: "json",
-success: function(response) {
-love_btn.html(" "+response.likes_count+" อยากกิน");
-
-}
-});
-});
-});
-</script>
-
-{% endblock %}
+        $(document).on('click', '.number-spinner button', function () {
+        var btn = $(this),
+        oldValue = btn.closest('.number-spinner').find('input').val().trim(),
+        newVal = 0;
+        if (btn.attr('data-dir') == 'up') {
+        newVal = parseInt(oldValue) + 1;
+        } else {
+        if (oldValue > 0) {
+        newVal = parseInt(oldValue) - 1;
+        } else {
+        newVal = 0;
+        }
+        }
+        btn.closest('.number-spinner').find('input').val(newVal);
+        });
+        });
+        $(document).ready(function(){
+        // alert("earn");
+        $(".like").on("click", function() {
+        var pk = $(this).attr('name');
+        var love_btn = $(this);
+        var id = $(this).attr('id');
+        love_btn.toggleClass("pop");
+        $.ajax({
+        type: "POST",
+        url: "{% url 'like_button' %}",
+        data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+        dataType: "json",
+        success: function(response) {
+        love_btn.html(" "+response.likes_count+" อยากกิน");
+        }
+        });
+        });
+        });
+        </script>
+        <!--     <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCk94-_1bxrwuGCPwY3PXcZeDXiP4JOUc8&callback=initMap">
+        </script> -->
+    {% endblock %}

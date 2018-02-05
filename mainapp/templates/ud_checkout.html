@@ -79,7 +79,7 @@
                         <div class=" uk-margin-medium-bottom"> -->
                             
                             <h2 class="uk-heading-bullet">ตรวจสอบรายการ</h2>
-                 
+    <div class="uk-container">
                             <table  id="add_table" class="uk-table uk-table-divider  uk-margin-remove-bottom  ">
           
                                 <tbody>
@@ -87,7 +87,7 @@
             <td> <label>รายการ</label></td>
              <td> <label>จำนวน</label></td>
               <td> <label>ราคา</label></td>
-          
+            <td class="uk-text-center"> <label>ยกเลิกสินค้า</label></td>
         </tr>
                                     {% for order in output %}
                                         
@@ -95,8 +95,8 @@
                                           <td class="uk-width-small">  <h4> {{order.name}}</h4></td>
                                             <td class="uk-width-small"> <h4>x {{order.amount}}  </h4></td>
                                             <td class="uk-width-small">  <h4> {{order.price}} บาท</h4></td>
-                                               <td class="uk-width-small"  >
-                                            <a class="remove_from_cart" name="{{order.menu_id}}"><h4 > {{order.menu_id}}<i class="fa fa-trash-o"></i></h4></a>
+                                               <td class="uk-width-small uk-text-center"  >
+                                            <a class="remove_from_cart" name="{{order.menu_id}}"><h4 > <i class="fa fa-trash-o"></i></h4></a>
                                                 
                                                 
                                             </td>
@@ -105,21 +105,24 @@
                                     {% if delivery_charge == 0 %}
                                         <tr style="font-weight: bold;color: black">
                                             <td class="uk-width-small ">  </td>
+                                                  <td class="uk-width-small ">  </td>
                                             <td class="uk-width-small "> <h3 >รวม</h3> </td>
-                                            <td class="uk-width-small">  <h3> {{total}} บาท</h3></td>
+                                            <td class="uk-width-small uk-text-center">  <h3> {{total}} บาท</h3></td>
                                             
                                         </tr>
                                     {% else %}
                                         <tr style="font-weight: bold;color: black">
                                             <td class="uk-width-small ">  </td>
+                                                  <td class="uk-width-small ">  </td>
                                             <td class="uk-width-small "> <h3 >ค่าจัดส่ง</h3> </td>
-                                            <td class="uk-width-small">  <h3> {{delivery_charge}} บาท</h3></td>
+                                            <td class="uk-width-small uk-text-center">  <h3> {{delivery_charge}} บาท</h3></td>
                                             
                                         </tr>
                                         <tr style="font-weight: bold;color: black">
                                             <td class="uk-width-small ">  </td>
+                                                  <td class="uk-width-small ">  </td>
                                             <td class="uk-width-small "> <h3 >รวม</h3> </td>
-                                            <td class="uk-width-small">  <h3 id="total_price"> {{total}} บาท</h3></td>
+                                            <td class="uk-width-small uk-text-center">  <h3 id="total_price"> {{total}} บาท</h3></td>
                                             
                                         </tr>
                                     {% endif %}
@@ -127,6 +130,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                             <hr>
                        <div class="nav-desktop">   
 

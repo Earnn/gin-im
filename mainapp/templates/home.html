@@ -131,15 +131,17 @@ img.user {
     <div class="banner-img">
         <div class="ps-slider uk-margin-remove-button " id="slider2" >
             <div class="ps-slides " id="slides2">
+            <div id="slide1" class="ps-slide  pointer" data-slide-laps="4" 
+                style="background-image: url('{% static "images/banner_home.png" %}'); width: 100%; height:auto;"></div>
                
-                <div id="slide1" class="ps-slide " data-slide-laps="4" 
-                style="background-image: url('{% static "images/banner3.jpg" %}'); width: 100%; height:auto;"></div>
+                <div id="slide2" class="ps-slide pointer" data-slide-laps="4" 
+                style="background-image: url('{% static "images/banner1.jpg" %}'); width: 100%; height:auto;"></div>
                  <!-- <a href="{% url 'is_inf' %}">                   -->
-                     <div  id="slide2" class="ps-slide pointer" data-slide-laps="4" 
-                style="background-image: url('{% static "images/banner1.jpg" %}');"></div>
+                <div  id="slide3" class="ps-slide " data-slide-laps="4" 
+                style="background-image: url('{% static "images/banner3.jpg" %}');"></div>
                 <!-- </a> -->
                  <!-- <a href="about-ginim">  -->
-                  <div   id="slide3 " class="ps-slide pointer slide3 " data-slide-laps="4" 
+                  <div   id="slide4 " class="ps-slide pointer slide3 " data-slide-laps="4" 
                 style="background-image: url('{% static "images/banner2.jpg" %}');"></div>
                <!-- </a> -->
               
@@ -180,15 +182,19 @@ img.user {
 
     <!-- <img class="circular-square" src="{% static "images/steak2.jpg" %}" /> -->
     <div class="uk-section uk-section-default ">
-    
+   
     <h1 class="uk-heading-bullet">ค้นหาอย่างรวดเร็ว</h1>
-        <!-- <h3 class="uk-text-center"> <img src="{% static "images/find_banner.png" %}" /></h3> -->
-      <!--   <p>ค้นหาร้านค้ากว่า 800 ร้าน</p> -->
-        <ul class="uk-subnav uk-subnav-divider" >
+     <ul class="uk-subnav uk-subnav-divider" >
             <li><a href="{% url 'search_cate' cate='Delivery'  %}"  style="font-size: 15px; font-family: 'Kanit', sans-serif;">Delivery</a></li>
             <li ><a href="{% url 'search_cate' cate='all' %}"  style="font-size: 15px; font-family: 'Kanit', sans-serif;">ค้นหาทั้งหมด</a> </li>
            
         </ul>
+      
+        <div class="uk-margin-bottom">
+        <a href="{% url 'tohrung' %}"><img src="{% static "images/serach.png" %}" style="  " /></a>
+
+
+    </div>
   
         <div class="search-cate-desktop uk-grid-collapse uk-child-width-1-4@m  uk-child-width-1-4@s" uk-grid>
             
@@ -541,6 +547,11 @@ img.user {
     $( "#slide2" ).click(function() {
  
         location.href="{% url 'is_inf' %}";
+    });
+
+     $( "#slide1" ).click(function() {
+ 
+        location.href="{% url 'tohrung' %}";
     });
 
      $('.slide3').click(function(){
