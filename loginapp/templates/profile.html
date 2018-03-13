@@ -79,7 +79,7 @@
                                     <li><a class="click-order" ><span>&#8226;</span> ออเดอร์ของฉัน</a></li>
                                     <li><a class="click-coupon" ><span>&#8226;</span> คูปองของฉัน</a></li>                                       
                                     <li><a href="{% url 'is_inf' %}"><span>&#8226;</span> ประวัติความหิว</a></li>
-                                    <li><a href="{% url 'mainapp:add_store' %}" ><span>&#8226;</span> เพิ่มร้านค้าที่คุณรู้จัก</a></li>
+                                    <li><a href="{% url 'add_store' %}" ><span>&#8226;</span> เพิ่มร้านค้าที่คุณรู้จัก</a></li>
                                     <li><a href="{% url 'change_password' %}" class="" ><span>&#8226;</span> เปลี่ยนพาสเวิร์ด</a></li>
                                     <li><a href="{% url 'logout' %}"><span>&#8226;</span> ออกจากระบบ </a></li>
                                 </ul>
@@ -672,7 +672,7 @@
             $("#order").css("display", "none");
             $("#review").css("display", "none");
             // $("#add").css("display", "block");
-            $("#about").css("display", "none");
+            $("#about").css("display", "block");
             $("#coupon").css("display", "none");
             $(".click-about").addClass( "active" );
             $(".click-love").removeClass("active");

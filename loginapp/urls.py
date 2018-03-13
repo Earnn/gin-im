@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^settings/$', views.profile, name="profile"),
     # url(r'^settings/store/$', views.profile_store, name="profile_store"),
     url(r'^password/$', views.change_password, name='change_password'),
+    url(r'^order-status/$', views.profile_tag_order, name="profile_tag_order"),
     # url(r'^success/$',  name='change_password_success'),
 
     # url(r'^password/$', views.change_password, name='change_password'),

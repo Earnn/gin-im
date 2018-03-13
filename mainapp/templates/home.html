@@ -454,6 +454,41 @@ img.user {
           
 
            
+          {% elif item.type == 'information' %}
+
+              <div class="uk-card uk-card-default uk-card-body uk-padding-remove-bottom"> 
+
+        
+            
+             <header class="uk-comment-header uk-grid-medium uk-flex-middle" uk-grid>
+                        <div class="uk-width-auto">
+                               <img class="uk-comment-avatar uk-border-circle" src="{{item.profile_picture}}" style="object-fit: cover;" alt="">
+                        </div>
+                     <div class="uk-width-expand">
+                               <h4 class="uk-card-title uk-text-left" >
+                      
+                
+              <i class="fa fa-pencil-square-o uk-text-large uk-text-muted" aria-hidden="true"></i> {{item.username}} ได้รับคูปอง <span class="uk-text-bold"> {{item.store}}</span> หลังจาก
+
+              <a class="uk-link-reset"  href="{% url 'inf'   %}" ><span class="uk-text-bold">  กรอกประวัติความหิว</span></a>
+
+
+               <span class="uk-text-small uk-text-muted"> </span> <span class="uk-text-small uk-text-muted">{{item.create_at | timesince }} </span></h4>
+            
+
+            </div>
+                            
+                            
+                         
+                    
+                    </header>
+
+
+            <br>
+          </div>
+          
+
+           
            {% endif %}
                 {% endfor %}
         </div>

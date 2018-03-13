@@ -5,6 +5,10 @@
         <meta charset="utf-8">
         
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="{% static 'images/favicon.ico' %}" rel="shortcut icon" type="image/x-icon" />
+
+
         <title>{% block title %}กินอิ่ม{% endblock %}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -704,7 +708,7 @@
                                 <a href="{% url 'home' %}"> <img class=" logo"   src="{% static "images/logo3.png" %}"/> </a>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="uk-margin  uk-text-center">
                                 <form action="{% url 'search_input' %}" method="POST"  class="uk-search uk-search-default serach-input" >
                                     {% csrf_token %}
@@ -714,17 +718,21 @@
                                 
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="user action pull-right">
                                 <ul>
-                                    
+                                   
+                                 <li><a href="{% url 'profile_tag_order' %}">สถานะออเดอร์</a>  
+                               
+                                 </li> 
+
                                     <li><a href="{% url 'profile' %}"> <img class="img-user"  src="{{profile}}"/> 
                                        </a>
                                     
                                 </li>
-                                <li>
-                        
-                                 </li>
+                               <!--  <li><a href="{% url 'profile' %}">{{profile_name}} </a>  
+                               
+                                 </li> -->
                               
                             </ul>
                         </div>

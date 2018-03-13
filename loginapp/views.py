@@ -58,6 +58,218 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
     return render(request, 'change_password.html', {'form': form})
 
+
+@login_required
+def profile_tag_order(request):
+    # collect_session(request,"เช็คสถานะออเดอร์",request.user)
+    c = Coupon.objects.all()
+    for i in c :
+        if date.today() > i.date_expire:
+            i.delete()
+
+    
+    out = []
+    mobile_out = []
+    love_list = []
+    order_list =[]
+    coupon_list =[]
+
+    user_order_list=[]
+    try:
+        p = Profile.objects.get(user = request.user)
+        print (p.name)
+
+        print (p.picture.url)
+        try:
+            
+            form = ProfileForm(initial={'name': p.name,'image':p.picture.url if p.picture.url else None,'phone':p.phone_number,'address':p.address})
+        except :
+            pass
+        form.fields['name'].widget.attrs['placeholder'] = p.name
+        # form.fields['image'].widget.attrs['placeholder'] = p.picture.url
+        form.fields['phone'].widget.attrs['placeholder'] = p.phone_number
+        form.fields['address'].widget.attrs['placeholder'] = p.address
+
+        if request.method == 'POST':
+            form = ProfileForm(request.POST, request.FILES)
+            if form.is_valid():
+                print("Earn",form.cleaned_data['name'])
+                profile_update = Profile.objects.filter(user=request.user).update(
+                    name=form.cleaned_data['name'],
+                    picture= request.FILES['image'],
+                    address=form.cleaned_data['address'],
+                    phone_number=form.cleaned_data['phone'])
+                p = Profile.objects.get(user=request.user)
+                p.picture = request.FILES['image']
+                p.save()
+                # form.save()
+            else:
+                profile_update = Profile.objects.filter(user=request.user).update(
+                name=form.cleaned_data['name'],
+                address=form.cleaned_data['address'],
+                phone_number=form.cleaned_data['phone'])
+
+                # login(request, user)
+                return redirect('profile')
+       
+          
+      
+        user = request.user
+        store = Store.objects.filter(likes=user).order_by('created_at')
+        for l in store:
+            love = {'name':'', 'id' : 0 , 'img':''} 
+            love['id'] = l.id
+            love['img'] = l.image
+            love['name'] = l.name
+            print(love['id'] ," this is id")
+            love_list.append(love)
+       
+
+        try :
+            reviews = Review.objects.filter(user=request.user).order_by('created_at')
+            rate = []
+            profile_picture = []
+            for i in reviews:
+                temp = { 'rating_color': 0,'rating_no_color': 0, }
+                temp['rating_color'] = i.rating
+                temp['rating_no_color'] = 5 - temp['rating_color']
+                rate.append(temp)
+                pic = Profile.objects.get(user=i.user).picture.url
+                profile_picture.append(pic if pic else None)
+
+            out = zip(reviews,rate,profile_picture)
+            mobile_out = zip(reviews,rate,profile_picture)
+            # review
+
+        except :
+            pass
+
+        try :
+            orders = Order.objects.filter(user=request.user).order_by('-date')
+            for i in orders:
+                temp = {'id':0,'name_s':"",'menu_amount':[],'date':None,
+                    'status':'','total':0.0,'isSuccess':False,'set':[]}
+             
+                temp['id'] = i.id
+                      
+                s = Store.objects.get(id=i.store.id) 
+                temp['name_s'] = s.name
+                temp['date'] = i.date
+                temp['status'] = i.status
+                temp['total'] = i.total
+                temp['isSuccess'] = i.isSuccess
+              
+                
+                for m,a in zip(i.menu,i.amount):
+                    ma = {'menu':None,'amount':a,}
+                    
+                   
+                    try:
+                        int(m)
+                        name = Menu.objects.get(id=m).name
+                        if "Solo" in name:
+                            name = name.replace("(Solo)","")
+                        
+                        ma['menu'] = name
+                        # ma = {'menu':Menu.objects.get(id=m).name,'amount':a}
+                        temp['menu_amount'].append(ma)
+                        print("temp",temp)
+                        
+                    
+                    except Exception as e:
+                        tuple_menu = literal_eval(m)
+                        main = Menu.objects.get(id=tuple_menu[0])
+                        ma['menu'] = main.name
+                        temp['menu_amount'].append(ma)
+                    
+                order_list.append(temp)
+
+            print("order_list",order_list)
+        except :
+            print("raise order_list",order_list)
+            raise
+
+        try :
+            coupon = GetCoupon.objects.filter(user=request.user)
+
+            for i in coupon :   
+                
+                if i.amount <= 0:
+                    i.delete()
+                else:
+                    c = Coupon.objects.get(id=i.coupon.id)
+                    temp = {'id_coupon': 0,'id_store':0,'name':"",'msg':"",'amount':1,'date': None,'code':"-", 'image':""}
+                    if i.amount > 0 and date.today() <  c.date_expire :            
+
+                        temp['id_coupon'] = c.id
+                        temp['name'] = c.store.name
+                        temp['id_store'] = c.store.id
+                        temp['msg'] = c.msg
+                        temp['amount'] = i.amount
+                        temp['date'] = c.date_expire
+                        temp['image'] = c.image
+                        if c.code != None :
+                            temp['code'] = c.code
+                        coupon_list.append(temp)
+        except :
+            pass 
+
+       
+
+        
+
+    except Profile.DoesNotExist:
+        form = ProfileForm()
+        profile = Profile.objects.create(user=request.user,name=request.user.get_short_name(),email = request.user.email)
+        print(profile.user)
+    
+    # check = Profile.objects.get(user=request.user)
+    person = Profile.objects.get(user=request.user)
+    try :
+        s = StoreByUser.objects.get(user=request.user)
+        try :
+            p = s.store
+            if "delivery" in p.tags :
+                delivery = True
+            else :
+                delivery = False
+           
+            user_order = Order.objects.filter(store__id=p.id).order_by('-date')
+
+            for i in user_order:
+                temp = {'id':0,'username':'','address':'','menu_amount':[],'date':None,'total':0,
+                'slip':None}
+                temp['id'] = i.id
+                temp['username'] = i.user.username
+                temp['address'] = i.address
+                temp['total'] = i.total
+                temp['slip'] = i.slip_payment
+                menu_list = []
+                amount_list = []
+                    
+                for m,a in zip(i.menu,i.amount):
+                    ma = {'menu':Menu.objects.get(id=m),'amount':a}
+                    temp['menu_amount'].append(ma)
+                temp['date'] = i.date
+
+                user_order_list.append(temp)
+                print(user_order_list)
+            return render(request, 'profile_store.html',{'form': form,'username': request.user.username,
+                'person':person,'user_order_list_mobile':user_order_list,
+                'user_order_list_desktop':user_order_list,
+                'delivery':delivery})
+        except :
+            pass
+    except StoreByUser.DoesNotExist:
+        # print('person',person)
+        # print("picture",person.picture.url)
+        print("order_list",order_list)
+        return render(request, 'profile_tag_order.html',{'form': form,'username': request.user.username,
+            'person':person,'love_list':love_list,'order_list':order_list,'out':out,
+            'mobile_out':mobile_out,'coupon_list':coupon_list,'coupon_list_mobile':coupon_list})
+  
+    
+
 # @login_required
 # def profile(request):
 #     love_list = []

@@ -135,7 +135,7 @@
                                 <div style="border-left: 3px solid #FFBF00;padding-left: 1em;">
                                     <!-- <form  method="get"> -->
                                     {% csrf_token %}
-                                    <h3 class="uk-card-title uk-text-left uk-margin-bottom " style="color: #BDBDBD;">  <a  href="../store/{{store.name}}" class="store-name">
+                                    <h3 class="uk-card-title uk-text-left uk-margin-bottom " style="color: #BDBDBD;">  <a  href="" class="store-name">
                                     {{store.name}}</a>
                                     <!-- </form> -->
                                     {% for value in store.rating_color|times %}
@@ -155,11 +155,11 @@
                                 <div class="uk-grid-collapse uk-child-width-expand uk-text-center uk-margin " uk-grid uk-lightbox="animation: slide">
                               
                                     {% for menu in store.menues %}
-                                       
+                                       ../{{menu.image.url}}
                                          <div>
                                             <a class="uk-inline" href="../{{menu.image.url}}" >
                                                  <div class="imgCrop-search">
-                                                    <img  class="imgCrop-search" src="{{menu.image.url}}" style=" object-fit: cover;" alt="" >
+                                                    <img  class="imgCrop-search" src="../{{menu.image.url}}" style=" object-fit: cover;" alt="" >
                                                 </div>
                                             </a>
                                         </div>

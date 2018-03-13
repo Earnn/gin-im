@@ -29,7 +29,7 @@ class Store(models.Model):
 	likes = models.ManyToManyField(User, related_name="likes",blank=True,null=True)
 	delivery_boundary = models.CharField(max_length=1000,blank=True,null=True)
 	delivery_payment = models.CharField(max_length=2000,blank=True,null=True)
-	created_by = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
+	created_at = models.DateTimeField(auto_now_add=True,null=True,)
 
 
 	def __str__(self):
@@ -177,6 +177,7 @@ class Informations(models.Model):
 	dessert = models.BooleanField(default=False)
 	coffee = models.BooleanField(default=False)
 	juice = models.BooleanField(default=False)
+	created_at = models.DateTimeField(auto_now_add=True,null=True,)
 
 
 class Payment(models.Model):
@@ -201,9 +202,11 @@ class GetCoupon(models.Model):
 	amount = models.IntegerField(default=1, blank=True,null=True)
 
 class DisplayHome(models.Model):
+	
 	user = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
 	coupon =  models.ForeignKey(Coupon, on_delete=models.SET_NULL,blank=True,null=True)
 	review = models.ForeignKey(Review, on_delete=models.SET_NULL,blank=True,null=True)
+	information = models.ForeignKey(Informations, on_delete=models.SET_NULL,blank=True,null=True)
 
 class CodeType (models.Model):
 	coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,blank=True,null=True)

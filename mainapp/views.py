@@ -514,9 +514,14 @@ def home(request):
 	for item in display_list:
 		if item.coupon is None :
 			if item.review is None :
-				item_list = {'rating_color': 0 ,'rating_no_color': 0 ,'profile_picture':None,
-				'type':'review','store':'','username':'','create_at' : None,'comment' : ''}
-				temp = { 'rating_color': 0,'rating_no_color': 0, }
+				information = Informations.objects.get(id=item.information.id)
+				item_list = {'username':'','profile_picture': None,'message' :'','store':''
+				,'type':'information','create_at' : None}
+				item_list['profile_picture'] = Profile.objects.get(user=item.user).picture.url
+				item_list['message'] = 'กรอกประวัติความหิว'
+				item_list['username'] = item.user.username
+				item_list['create_at'] = item.information.created_at
+
 			else:
 				item_list = {'rating_color': 0 ,'rating_no_color': 0 ,'profile_picture':None,
 					'type':'review','store':'','username':'','create_at' : None,'comment' : ''}
@@ -536,11 +541,15 @@ def home(request):
 				item_list['profile_picture'] = Profile.objects.get(user=item.review.user).picture.url
 					
 		elif item.review is None :
-			if item.coupon is None :
-				item_list = {'rating_color': 0 ,'rating_no_color': 0 ,'profile_picture':None,
-				'type':'review','store':'','username':'','create_at' : None,'comment' : ''}
-				temp = { 'rating_color': 0,'rating_no_color': 0, }
-		
+			if item.coupon is None :				
+				# coupon = Coupon.objects.get(id=item.coupon.id)
+				information = Informations.objects.get(id=item.information.id)
+				item_list = {'username':'','profile_picture': None,'message' :'','store':''
+				,'type':'information','create_at' : None}
+				item_list['profile_picture'] = Profile.objects.get(user=item.user).picture.url
+				item_list['message'] = 'กรอกประวัติความหิว'
+				item_list['username'] = item.user.username
+				item_list['create_at'] = item.information.created_at
 			else:
 				coupon = Coupon.objects.get(id=item.coupon.id)
 				item_list = {'username':'','profile_picture': None,'coupon_msg' :'','store':''
@@ -550,6 +559,7 @@ def home(request):
 				item_list['store'] = coupon.store.name
 				item_list['username'] = item.user.username
 				item_list['create_at'] = item.coupon.created_at
+		
 			# rate.append(temp)
 			# reviews_list.append(item.review)
 			# profile_picture.append(Profile.objects.get(user=item.review.user).picture.url)
@@ -557,7 +567,7 @@ def home(request):
 			# mobile_out= zip(reviews_list,rate,profile_picture)
 			# except :
 			# 	raise Http404
-
+		print("item_list",item_list)
 		desktop.append(item_list)
 		mobile.append(item_list)
 
@@ -1193,7 +1203,9 @@ def searchBycate(request,cate):
 		page = request.GET.get('page', 1)
 
 		for s in stores :
-			temp = {'id':'','name': '', 'tags' : [], 'rating_color': 0,'rating_no_color': 0, 'no_reviews':0,'menues' : [],'love':0,'store_loved_color':[]}
+			temp = {'id':'','name': '', 'tags' : []
+			, 'rating_color': 0,'rating_no_color': 0, 
+			'no_reviews':0,'menues' : [],'love':0,'store_loved_color':[]}
 			
 			# temp['name'].append(s.name)
 			temp['name'] = s.name
@@ -1282,7 +1294,10 @@ def searchAll(request):
 		stores= Store.objects.annotate(search=SearchVector('tags', 'name')).filter(search__contains=cate)
 
 		for s in stores :
-			temp = {'id':'','name': '', 'tags' : [], 'rating_color': 0,'rating_no_color': 0, 'no_reviews':0,'menues' : [],'love':0,'store_loved_color':[]}
+			temp = {'id':'','name': '',
+			 'tags' : [], 'rating_color': 0,
+			 'rating_no_color': 0, 'no_reviews':0,
+			 'menues' : [],'love':0,'store_loved_color':[]}
 			temp['name'] = s.name
 			temp['id'] = s.id
 
@@ -1602,14 +1617,18 @@ def fill_in_complete(request):
 				'thai':thai,'diet':diet,'shabu':shabu,'grill':grill,'steak':steak,'fastfood':fastfood,'cake':cake,
 				'dessert':dessert,'coffee':coffee,'juice':juice,'facebook':facebook,'twitter':twitter,'instagram':instagram,'line':line},
 			)
-
+			
 			if created :
+				dis = DisplayHome.objects.update_or_create(user=request.user,information=obj)
+
 				try:
 					c = Coupon.objects.all()
 					for i in c :
 						GetCoupon.objects.create(user=request.user,coupon=i,amount=i.amount)
 				except Exception as e:
 					raise
+
+			# print("dis",dis)
 
 			# Informations.objects.create(user=request.user,age=age,birthdate=date(year=int(year), month=int(month), day=int(day)),
 			# 	sex=gender,salary=salary,size=list_size,breakfast=bf,lunch=lunch,dinner=dinner,late=late,
